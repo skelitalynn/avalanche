@@ -2,7 +2,9 @@
 
 基于 Avalanche 生态的小型黑客松 Demo，采用轻量 Spec 驱动开发。
 
-当前已建立文档框架；业务方向和技术栈尚待确定，应用代码、启动命令和链上部署尚未提供。
+当前已建立文档与协作框架，并确认基础技术选型；业务方向仍待确定，应用代码、启动命令和链上部署尚未提供。
+
+技术方案：TypeScript + React + Vite，使用 Core Wallet、wagmi + viem 接入 Fuji C-Chain；测试采用 Vitest + Playwright。若业务需要自定义合约，采用 Solidity + Hardhat。后端、数据库与具体依赖版本尚未确定，详见 [技术架构](spec/architecture.md)。
 
 - [Spec 入口](spec/README.md)：项目范围与文档导航。
 - [开发 Roadmap](spec/roadmap.md)：任务、依赖、测试、验收与完成证据。

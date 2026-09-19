@@ -4,7 +4,7 @@
 
 ## 开发起点
 
-[Avalanche Builder Hub](https://build.avax.network/) 提供开发文档与开发者工具；平台区分在 C-Chain 构建应用和创建自己的 L1 两条路线。基于本项目的小型 Demo 定位，建议先采用 Fuji C-Chain，业务确定后再决定是否需要自定义合约或 L1。
+[Avalanche Builder Hub](https://build.avax.network/) 提供开发文档与开发者工具；平台区分在 C-Chain 构建应用和创建自己的 L1 两条路线。本项目已确认采用 Fuji C-Chain，使用 Core Wallet 与 wagmi + viem；业务确定后再决定是否需要自定义合约，自建 L1 不在当前范围内。完整选型见 [技术架构](architecture.md)。
 
 ## Fuji C-Chain
 
@@ -37,7 +37,7 @@ curl --fail-with-body --silent --show-error --max-time 20 \
 
 ## 工具选择
 
-这些是候选工具，不是必须全部安装的依赖。
+以下保留手册中的生态工具及补充 SDK 入口；本项目基础链交互已选定 wagmi + viem，表内工具目前均不列为必装依赖。
 
 | 工具 | 用途与当前状态 |
 | --- | --- |
