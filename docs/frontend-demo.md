@@ -43,11 +43,12 @@ npm run screenshots
 ## Mock边界与真实入口
 
 - `apps/web/src/data/types.ts`：视图数据、整数微 USDC、异步服务契约。
-- `apps/web/src/data/service.ts`：唯一适配入口，当前注入 `createMockService`。
+- `apps/web/src/data/service.ts`：唯一适配入口，按 `VITE_DATA_MODE` 注入 Mock 或 HTTP 实现。
+- `apps/web/src/data/httpService.ts`：API 模式的 health/config、SIWE、Cookie 会话、关系列表/详情读取与视图映射。
 - `apps/web/src/data/mockService.ts`：Mock 状态机、校验、localStorage；测试可注入存储和延迟。
 - `App.tsx`：只使用服务快照、订阅、动作，不读取 fixture 或 localStorage。
 
-T013通过 `main.tsx` 选择独立 `live/LiveApp.tsx`，组合真实HTTP与链状态；Mock适配层保持演示用途。签名、交易pending/revert、取消、和解、附件及付款重试的完整验收仍按001逐项完成。控制台角色切换绝不作为真实登录或权限校验。当前 `appeal/voting` 是演示展示子状态，不能直接当作 Solidity 枚举。
+T013 通过 `main.tsx` 选择独立 `live/LiveApp.tsx`，组合真实 HTTP 与链状态；Mock 适配层保持演示用途。T018 的 `httpService.ts` 仍可通过 `VITE_DATA_MODE=api` 用于七页演示的 HTTP/SIWE 只读映射，但不替代 T013 的真实写入入口。签名、交易 pending/revert、取消、和解、附件及付款重试的完整验收仍按 001 逐项完成。控制台角色切换绝不作为真实登录或权限校验。当前 `appeal/voting` 是演示展示子状态，不能直接当作 Solidity 枚举。
 
 T013已整合本地SIWE、TestUSDC托管、隐私API与附件；Core/Fuji及完整边界尚未全部验收，T010本身仍只是Mock交付。演示只保留一段关系、固定起始时钟；未提供跨设备邀请、邀请/存款超时、争议和解及证据上传。
 

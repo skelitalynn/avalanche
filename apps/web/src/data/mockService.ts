@@ -316,6 +316,11 @@ export function createMockService(
 ): SituationService {
   let state = fixture();
   let recoveryMessage = "";
+  const connection = {
+    mode: "mock" as const,
+    phase: "ready" as const,
+    message: "本机 Mock 数据",
+  };
   const listeners = new Set<() => void>();
   let busy = false;
   try {
@@ -335,10 +340,15 @@ export function createMockService(
       return recoveryMessage;
     },
     getSnapshot: () => state,
+    getConnectionSnapshot: () => connection,
     subscribe: (listener) => {
       listeners.add(listener);
       return () => listeners.delete(listener);
     },
+    async initialize() {},
+    async connect() {},
+    async disconnect() {},
+    async refresh() {},
     async dispatch(action) {
       requireThat(!busy, "上一步操作尚未完成");
       busy = true;

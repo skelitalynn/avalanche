@@ -19,6 +19,10 @@ import { JuryPage } from "./pages/JuryPage";
 import { EndedPage } from "./pages/EndedPage";
 export default function App() {
   const state = useSyncExternalStore(service.subscribe, service.getSnapshot);
+  const connection = useSyncExternalStore(
+    service.subscribe,
+    service.getConnectionSnapshot,
+  );
   const { situation: s, role, now } = state;
   const t = s.terms;
   const [page, setPage] = useState(getPage);
@@ -37,6 +41,9 @@ export default function App() {
   const days = s.activatedAt
     ? Math.max(0, Math.floor((now - s.activatedAt) / DAY))
     : 0;
+  useEffect(() => {
+    void service.initialize();
+  }, []);
   useEffect(() => {
     const change = () => {
       setPage(getPage());
@@ -132,6 +139,56 @@ export default function App() {
       )[scene],
     );
     setControls(false);
+  }
+  async function connectBackend() {
+    setBusy(true);
+    setError("");
+    try {
+      await service.connect();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "钱包或后台连接失败");
+    } finally {
+      setBusy(false);
+    }
+  }
+  if (service.mode === "api" && connection.phase !== "ready") {
+    const canConnect = connection.phase === "needs-auth";
+    return (
+      <Theme
+        className="demo-theme"
+        appearance="light"
+        accentColor="grass"
+        grayColor="sand"
+        radius="medium"
+        scaling="100%"
+        panelBackground="solid"
+      >
+        <main className="backend-gate">
+          <section className="card backend-card" aria-live="polite">
+            <WarningCircle size={28} />
+            <p className="eyebrow">SITUATIONSHIT / BACKEND</p>
+            <h1>连接真实后台</h1>
+            <p>{connection.message}</p>
+            {error && <p className="alert">{error}</p>}
+            {canConnect && (
+              <Button onClick={() => void connectBackend()} disabled={busy}>
+                {busy ? "连接中…" : "连接钱包并登录"}
+              </Button>
+            )}
+            <Button
+              secondary
+              disabled={busy}
+              onClick={() => void service.initialize()}
+            >
+              重新检查后台
+            </Button>
+            <p className="tiny muted">
+              登录使用 SIWE，会请求钱包签名；不会向后台发送私钥，也不会自动发起资金交易。
+            </p>
+          </section>
+        </main>
+      </Theme>
+    );
   }
   const pageProps = {
     s,

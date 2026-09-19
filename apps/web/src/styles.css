@@ -1866,3 +1866,28 @@ main:focus {
     transition-duration: 0.01ms !important;
   }
 }
+
+.backend-gate {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 32px 20px;
+  background: var(--cream);
+}
+
+.backend-card {
+  width: min(100%, 560px);
+  display: grid;
+  justify-items: start;
+  gap: 16px;
+  padding: clamp(28px, 6vw, 52px);
+}
+
+.backend-card h1,
+.backend-card p {
+  margin: 0;
+}
+
+.backend-card .button {
+  width: 100%;
+}
