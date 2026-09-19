@@ -59,6 +59,21 @@ export interface DemoState {
   now: number;
   situation: Situation;
 }
+export type ServiceMode = "mock" | "api";
+export type ConnectionPhase =
+  | "idle"
+  | "loading"
+  | "needs-auth"
+  | "ready"
+  | "error";
+export interface ConnectionSnapshot {
+  mode: ServiceMode;
+  phase: ConnectionPhase;
+  message: string;
+  account?: string;
+  chainId?: number;
+  situationAddress?: string;
+}
 export type DemoAction =
   | { type: "role"; role: Role }
   | { type: "scenario"; scenario: Scenario }
@@ -86,9 +101,14 @@ export type DemoAction =
   | { type: "timeout" };
 export interface SituationService {
   getSnapshot(): DemoState;
+  getConnectionSnapshot(): ConnectionSnapshot;
   subscribe(listener: () => void): () => void;
+  initialize(): Promise<void>;
+  connect(): Promise<void>;
+  disconnect(): Promise<void>;
+  refresh(): Promise<void>;
   dispatch(action: DemoAction): Promise<DemoState>;
-  readonly mode: "mock";
+  readonly mode: ServiceMode;
   readonly recoveryMessage: string;
 }
 export const DAY = 86400000;

@@ -1,11 +1,18 @@
 import { createMockService } from "./mockService";
+import { createHttpSituationService } from "./httpService";
 import type { SituationService } from "./types";
-// Composition root: replace this adapter with an HTTP/wallet implementation later.
-// Components consume only SituationService, never fixtures or storage.
+// Composition root: UI code stays independent from fixtures, HTTP and wallet APIs.
 let storage: Storage | undefined;
 try {
   storage = window.localStorage;
 } catch {
   /* Session-only when storage is restricted. */
 }
-export const situationService: SituationService = createMockService(storage);
+const mode = import.meta.env.VITE_DATA_MODE === "api" ? "api" : "mock";
+export const situationService: SituationService =
+  mode === "api"
+    ? createHttpSituationService({
+        baseUrl: import.meta.env.VITE_API_BASE_URL || "/api/v1",
+        situationAddress: import.meta.env.VITE_SITUATION_ADDRESS,
+      })
+    : createMockService(storage);
