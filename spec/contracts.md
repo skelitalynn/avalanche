@@ -180,3 +180,10 @@ nonce 至少 16 字节随机，10 分钟有效；消息内容由服务端生成�
 | 尚未部署 | SituationFactory / SituationAgreement | T005 编译后填写真实路径 | T006 授权部署后记录 |
 
 T002 仅冻结上述定义；T003–T006 分别记录实现与应用验收。破坏性接口调整必须改 policyVersion/相关 Spec 并重新部署对应合约，不能对既有已签关系悄悄修改行为。
+
+
+## 演示前台适配契约（002 / T010）
+
+此层是客户端视图契约，不替代上文真实 HTTP/合约接口：`apps/web/src/data/types.ts` 定义 `DemoState`、`DemoAction`、`SituationService`。`getSnapshot()` 返回稳定引用，`subscribe()` 订阅更新，`dispatch(action)` 异步执行并在校验成功后更新快照；失败抛出用户可见错误，不提前产生成功状态。`src/data/service.ts` 选择当前 Mock 实现，视图不得直接导入 fixture。
+
+本机角色、固定时钟、预设场景、模拟入金/投票均非身份或资金凭证。后续接入真实服务须分别映射私有 HTTP 数据和链上权威状态，并为 `INVITED/FUNDING/ACTIVE/ENDING/DISPUTED/SETTLING/ENDED/CANCELLED`、签名拒绝、交易 pending/revert、部分付款失败增加视图行为。演示中的 `appeal/voting` 为展示用争议子阶段；演示结算直接生成结果，不模拟真实交易已确认。未实现的过期取消、双边争议和解、证据授权/上传不得被当作本适配层的已完成功能。
