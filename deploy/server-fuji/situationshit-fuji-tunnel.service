@@ -1,0 +1,15 @@
+[Unit]
+Description=SituationSHIT temporary Fuji HTTPS tunnel (hostname changes on restart)
+After=network-online.target
+Wants=network-online.target
+[Service]
+Type=simple
+User=situationshit
+Group=situationshit
+ExecStart=/opt/situationshit-fuji/cloudflared tunnel --url http://127.0.0.1:8081 --no-autoupdate
+# Do not restart automatically: a new hostname requires APP_ORIGIN to be updated.
+Restart=no
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
