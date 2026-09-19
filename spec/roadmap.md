@@ -65,7 +65,7 @@
 
 - 状态：DONE
 - 负责人：本次文档由 AI 助手执行；技术方案由项目负责人确认。
-- 分支 / PR：`docs/confirmed-tech-stack` / 未创建。
+- 分支 / PR：`docs/confirmed-tech-stack` / [PR #2](https://github.com/skelitalynn/avalanche/pull/2)（合并状态以 GitHub 为准）。
 - 依赖：T001。
 - 对应 Spec：[技术架构](architecture.md)、[项目范围](README.md)。
 - 实施：记录已认可的语言、前端、钱包、网络、链交互和测试方案；同步入口、接口约定、生态参考及 AGENTS.md；明确条件选型与剩余待定项，并按项目负责人新授权更新默认 PR 交付规则。
