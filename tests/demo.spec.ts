@@ -22,7 +22,7 @@ async function advance(page: Page, name: string) {
   await page.getByRole("button", { name: "关闭演示控制" }).click();
 }
 test("AC-002-03 creation, signature and both deposits", async ({ page }) => {
-  await page.goto("/#/create");
+  await page.goto("/?mode=mock#/create");
   await page.getByLabel("你的昵称").fill("林林");
   await page.getByLabel("对方的昵称").fill("小满");
   await page.getByRole("button", { name: "生成模拟邀请" }).click();
@@ -56,7 +56,7 @@ test("AC-002-03 creation, signature and both deposits", async ({ page }) => {
 test("AC-002-04 normal end, cannot confirm own request, persisted payout", async ({
   page,
 }) => {
-  await page.goto("/#/relationship");
+  await page.goto("/?mode=mock#/relationship");
   await page.getByRole("button", { name: "提出结束关系" }).click();
   await expect(
     page.getByRole("button", { name: "等待对方确认结束" }),
@@ -77,7 +77,7 @@ test("AC-002-04 normal end, cannot confirm own request, persisted payout", async
 test("AC-002-04 formal check, appeal, two votes and 50/90 payout", async ({
   page,
 }) => {
-  await page.goto("/#/dispute");
+  await page.goto("/?mode=mock#/dispute");
   await role(page, "b");
   await page.getByRole("button", { name: "发起正式确认" }).click();
   await expect(
@@ -120,7 +120,7 @@ test("AC-002-04 formal check, appeal, two votes and 50/90 payout", async ({
 test("AC-002-05 reset, invalid save and numeric error feedback", async ({
   page,
 }) => {
-  await page.goto("/#/relationship");
+  await page.goto("/?mode=mock#/relationship");
   await scenario(page, "结算结果");
   await controls(page);
   await page.getByRole("button", { name: "重置演示", exact: true }).click();
@@ -132,7 +132,7 @@ test("AC-002-05 reset, invalid save and numeric error feedback", async ({
   await expect(
     page.getByText("演示存档无法读取，已恢复初始场景"),
   ).toBeVisible();
-  await page.goto("/#/create");
+  await page.goto("/?mode=mock#/create");
   await page.getByLabel("恢复基金 · 每人").fill("0.0000001");
   await page.getByRole("button", { name: "生成模拟邀请" }).click();
   await expect(page.getByRole("alert")).toContainText("6 位小数");
@@ -149,7 +149,11 @@ for (const viewport of [
     const errors: string[] = [];
     page.on("request", (r) => {
       if (
-        !r.url().startsWith("http://127.0.0.1:5173/") &&
+        !r
+          .url()
+          .startsWith(
+            (process.env.PLAYWRIGHT_BASE_URL ?? "http://127.0.0.1:5173") + "/",
+          ) &&
         !r.url().startsWith("data:")
       )
         external.push(r.url());
@@ -164,7 +168,7 @@ for (const viewport of [
       "jury",
       "ended",
     ]) {
-      await page.goto(`/#/${route}`);
+      await page.goto(`/?mode=mock#/${route}`);
       await expect(page.locator("main")).toBeVisible();
       await expect(page.getByText("演示模式 · 模拟数据")).toBeVisible();
       await expect(page.locator("h1")).toBeVisible();

@@ -24,7 +24,7 @@ for (const size of [
         ({ key, state }) => localStorage.setItem(key, JSON.stringify(state)),
         { key: STORAGE_KEY, state: fixture(scene) },
       );
-      await page.goto(`/?present=1#/${route}`);
+      await page.goto(`/?mode=mock&present=1#/${route}`);
       await expect(page.locator("h1")).toBeVisible();
       await page.evaluate(() => document.fonts.ready);
       await expect(page.getByText("演示模式 · 模拟数据")).toBeVisible();
@@ -43,7 +43,8 @@ for (const size of [
         fullPage: true,
         animations: "disabled",
         // Long exports put the mobile navigation below all content.
-        style: ".app{position:relative}@media(max-width:760px){.mobile-nav{position:absolute;bottom:0}}",
+        style:
+          ".app{position:relative}@media(max-width:760px){.mobile-nav{position:absolute;bottom:0}}",
       });
     }
   });

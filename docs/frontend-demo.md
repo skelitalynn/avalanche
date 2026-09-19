@@ -1,12 +1,12 @@
 # SituationSHIT 前台演示
 
-本次交付对应 [002 Spec](../spec/features/002-demo-frontend.md) / T010。七个中文页面、异步 Mock、角色与时间控制已可运行；未接入后端、钱包、合约或真实资金。
+本次交付对应 [002 Spec](../spec/features/002-demo-frontend.md) / T010。七个中文页面、异步 Mock、角色与时间控制已可运行；本指南的Mock模式不调用后台、钱包或合约。真实本地流程见 [本地运行指南](local-mvp.md)。
 
 当前 React 前台已按仓库根目录 `avalanche-demo.html` 统一视觉：米白背景、墨绿操作色、青柠状态提示、顶部品牌栏、横向关系步骤和抽象双人主视觉。原型只作为视觉与交互基准；七个直达页面、异步 Mock service、持久化、演示控制和验收流程继续由 React 应用实现。
 
 ## 启动与截图
 
-推荐 Node 24，最低 22.12；根目录 `npm ci` 后运行 `npm run dev`，打开 <http://localhost:5173>。正式演示建议先 `npm run build`，再 `npm run preview`，减少开发服务器资源占用。两者不能同时占用 5173。
+使用 Node 24.13+（Node 24）；根目录 `npm ci` 后运行 `npm run dev`，打开 <http://localhost:5173>。正式演示建议先 `npm run build`，再 `npm run preview`，减少开发服务器资源占用。两者不能同时占用 5173。
 
 服务器通过 Remote SSH 访问时，在编辑器的端口面板转发 5173，然后从本机浏览器打开上述地址。应用没有远程账户服务，邀请和身份切换只作用于当前浏览器，不支持把本机邀请发给另一台设备。
 
@@ -40,16 +40,16 @@ npm run screenshots
 
 见面记录与日常关系确认需要双方操作；一方发起后切换另一方确认。刷新会继续本机存档，「重置演示」恢复初始样例。姓名、好友与事件均为虚构；不要输入真实私密证据。
 
-## 后续接入点
+## Mock边界与真实入口
 
 - `apps/web/src/data/types.ts`：视图数据、整数微 USDC、异步服务契约。
 - `apps/web/src/data/service.ts`：唯一适配入口，当前注入 `createMockService`。
 - `apps/web/src/data/mockService.ts`：Mock 状态机、校验、localStorage；测试可注入存储和延迟。
 - `App.tsx`：只使用服务快照、订阅、动作，不读取 fixture 或 localStorage。
 
-后端可用后在适配入口增加真实实现，将私有 HTTP 数据和链上权威状态组合成视图，补齐签名、交易 pending/revert、过期取消、和解、附件授权与失败付款重试，再按001验收。控制台角色切换绝不作为真实登录或权限校验。当前 `appeal/voting` 是演示展示子状态，不能直接当作 Solidity 枚举。
+T013通过 `main.tsx` 选择独立 `live/LiveApp.tsx`，组合真实HTTP与链状态；Mock适配层保持演示用途。签名、交易pending/revert、取消、和解、附件及付款重试的完整验收仍按001逐项完成。控制台角色切换绝不作为真实登录或权限校验。当前 `appeal/voting` 是演示展示子状态，不能直接当作 Solidity 枚举。
 
-MVP 的真实 SIWE、Core、USDC 托管、隐私权限、附件和 Fuji 流程仍由 T003/T004/T005/T006 实施；本任务没有把它们标记为 DONE。演示只保留一段关系、固定起始时钟；未提供跨设备邀请、邀请/存款超时、争议和解及证据上传。
+T013已整合本地SIWE、TestUSDC托管、隐私API与附件；Core/Fuji及完整边界尚未全部验收，T010本身仍只是Mock交付。演示只保留一段关系、固定起始时钟；未提供跨设备邀请、邀请/存款超时、争议和解及证据上传。
 
 ## 验证记录
 
@@ -72,3 +72,6 @@ T012 视觉适配复验：2026-09-19，在 `feat/002-green-prototype-ui` 执行 
 ## 资源
 
 首页主视觉使用 CSS 绘制的抽象双人图形，不加载外部图片。图标使用 `@phosphor-icons/react`（MIT）。字体使用系统中文字体，没有运行时外链字体/图片请求。
+
+
+T013已提供独立真实入口；个人电脑启动、钱包操作和本地数据生命周期见 [本地运行指南](local-mvp.md)。本指南继续描述Mock模式；本地完整启动时通过 `?mode=mock` 访问。
