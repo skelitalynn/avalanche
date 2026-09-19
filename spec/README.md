@@ -41,6 +41,7 @@ spec/
 | 001 | [SituationSHIT 关系承诺 MVP](features/001-situationship.md) | DRAFT：范围已明确，争议、入金和技术边界待补齐 | T002、T005-1 至 T005-8、T006、T009 |
 
 首版排除 AI Agent、DeFi 收益、eERC 隐私金额、线下商户消费及更多 commitment 类型。新增功能使用下一个空闲编号，复制 [模板](features/_template.md)，并在此处加入链接。
+- [002 SituationSHIT 单文件交互原型](features/002-visual-prototype.md)：T010，从创建、双签、入金到关系主页的连续流程，并演示约定修订与申诉；仅本地 mock。
 
 ## 维护规则
 
