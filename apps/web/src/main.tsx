@@ -1,6 +1,7 @@
 import React, { lazy, Suspense } from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
+import "@radix-ui/themes/styles.css";
 import "./styles.css";
 const LiveApp = lazy(() => import("./live/LiveApp"));
 const mode = new URLSearchParams(location.search).get("mode");

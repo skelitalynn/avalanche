@@ -5,7 +5,14 @@ async function controls(page: Page) {
 }
 async function role(page: Page, value: string) {
   await controls(page);
-  await page.getByLabel("当前演示身份").selectOption(value);
+  await page.getByRole("combobox", { name: "当前演示身份" }).click();
+  const name =
+    value === "a"
+      ? /^A ·/
+      : value === "b"
+        ? /^B ·/
+        : new RegExp(`^好友 ${Number(value[1]) + 1} ·`);
+  await page.getByRole("option", { name }).click();
   await expect(page.getByRole("status")).not.toContainText("正在更新");
   await page.getByRole("button", { name: "关闭演示控制" }).click();
 }

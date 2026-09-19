@@ -11,6 +11,7 @@
 - [Avalanche 开发参考](spec/ecosystem.md)：Fuji 网络参数、钱包、测试币和工具入口。
 - [开发规则](AGENTS.md)：自然语言需求转 Spec、实现与验收的统一约定。
 - [多人协作指南](docs/collaboration.md)：任务认领、Git 分支、提交、PR 与冲突处理。
+- [路演 Slides](docs/slides/roadshow.html)：9 页 HTML 演示稿；方向键翻页，`F` 全屏，`N` 显示讲稿。
 
 开发顺序：明确功能 Spec → 拆分任务 → 实现 → 测试与验收 → 更新进度。
 

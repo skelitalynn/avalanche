@@ -52,7 +52,7 @@ SituationSHIT 按以下 Web + C-Chain 边界组织；链上维护资金和权威
 
 部署一个 SituationFactory，每个关系部署一个不可升级 SituationAgreement；SituationVault 和 DisputeResolution 为 Agreement 内部 Solidity 模块，使用同一份状态与托管余额，不独立部署。Factory 不保管关系资金。只有本关系状态机能决定分配，没有管理员裁决、升级或提款后门。裁决先锁定权益，再隔离尝试向原持有人付款；失败保留待付项，允许任意地址重试，不能改变收款人。完整权限与事件见 contracts.md。
 
-前台已位于 `apps/web`。`src/App.tsx` 为七页演示界面，`src/data/types.ts` 是视图契约，`src/data/service.ts` 是演示服务适配入口，`mockService.ts` 负责状态转换和本机持久化，`httpService.ts` 提供 HTTP/SIWE 连接、Cookie 会话及只读视图映射。页面通过 `SituationService` 读取状态与异步发送动作，不直接读写 localStorage。真实流程由 `main.tsx` 独立选择 `live/LiveApp.tsx`，经 `live/api.ts` 与 wagmi/viem 接入，不将链上状态塞进 `DemoState`，详见 [前台演示指南](../docs/frontend-demo.md)。
+前台已位于 `apps/web`。`src/App.tsx` 负责服务订阅、HTTP/SIWE 连接门和动作编排，`src/pages` 为七页视图，`src/ui` 为外壳、Radix Themes 基础组件、展示组件及演示交互；`src/styles.css` 统一米白/墨绿/青柠视觉。Radix Theme 限定于 Mock UI 和七页只读适配界面，真实入口仍独立加载自身样式。`src/data/types.ts` 是视图契约，`src/data/service.ts` 是演示服务适配入口，`mockService.ts` 负责状态转换和本机持久化，`httpService.ts` 提供 HTTP/SIWE 连接、Cookie 会话及只读视图映射。页面通过 `SituationService` 读取状态与异步发送动作，不直接读写 localStorage。真实流程由 `main.tsx` 独立选择 `live/LiveApp.tsx`，经 `live/api.ts` 与 wagmi/viem 接入，不将链上状态塞进 `DemoState`，详见 [前台演示指南](../docs/frontend-demo.md)。
 
 T010 的 Mock 仅用于截图与可点击演示，不能代替 SIWE、服务端权限、链上托管或真实交易验收。路由为 `#/页面名`，无需服务端路由回退。服务返回的金额为整数微 USDC；显示才转换为小数。演示身份切换与时间推进只存在于 Mock 控制面板。
 
