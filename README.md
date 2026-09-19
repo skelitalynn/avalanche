@@ -2,7 +2,7 @@
 
 基于 Avalanche 生态的小型黑客松 Demo，采用轻量 Spec 驱动开发。
 
-当前产品方向为 SituationSHIT：面向两个人的关系承诺、USDC 托管与好友争议判断产品，中文移动端优先。已整理[项目功能 Spec](spec/features/001-situationship.md)；T002 已冻结业务规则与接口；现提供 Mock 演示及真实本地 API、钱包签名和 EVM 合约流程。Fuji 尚未部署验收。
+当前产品方向为 SituationSHIT：面向两个人的关系承诺、USDC 托管与好友争议判断产品，中文移动端优先。已整理[项目功能 Spec](spec/features/001-situationship.md)；T002 已冻结业务规则与接口；现提供 Mock 演示及真实本地 API、钱包签名和 EVM 合约流程。Fuji Factory已部署；Core钱包业务流程与手机真机验收待实际操作。
 
 技术方案：TypeScript + React + Vite，使用 Core Wallet、wagmi + viem 接入 Fuji C-Chain；测试采用 Vitest + Playwright。自定义合约采用 Solidity + Hardhat。后端采用 TypeScript + Fastify、SQLite 和私有附件存储；具体依赖版本在工程初始化时锁定，详见 [技术架构](spec/architecture.md)。
 
@@ -30,7 +30,7 @@ npm run mvp:local
 
 ## 用Core钱包与Fuji测试币
 
-Fuji启动入口已提供；实际Factory部署仍需成功回执和部署清单，不能将本地测试链当成Fuji。取得 `.local/deployment-43113.json` 后执行 `npm run mvp:fuji`，打开 http://127.0.0.1:5174/ 并用自己的Core扩展连接43113。手机WalletConnect需填写项目自己的projectId。详见 [Fuji运行与验收](docs/fuji-acceptance.md)。
+Fuji Factory已部署，公开地址与成功回执记录在 `deployments/fuji.json`。执行 `npm run mvp:fuji`，打开 http://127.0.0.1:5174/ 并用自己的Core扩展连接43113。手机WalletConnect需填写项目自己的projectId。详见 [Fuji运行与验收](docs/fuji-acceptance.md)。
 
 ## 运行前台演示
 

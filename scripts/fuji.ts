@@ -40,7 +40,7 @@ try {
       socket.listen(port, "127.0.0.1", () => socket.close(() => done()));
     });
   const deploymentPath = resolve(
-    process.env.DEPLOYMENT_FILE ?? ".local/deployment-43113.json",
+    process.env.DEPLOYMENT_FILE ?? "deployments/fuji.json",
   );
   let deployment: {
     chainId: number;
@@ -52,7 +52,7 @@ try {
     deployment = JSON.parse(await readFile(deploymentPath, "utf8"));
   } catch {
     throw Error(
-      "Missing Fuji deployment manifest. Save the verified deployment as .local/deployment-43113.json or set DEPLOYMENT_FILE.",
+      "Missing Fuji deployment manifest. Save the verified deployment as deployments/fuji.json or set DEPLOYMENT_FILE.",
     );
   }
   if (

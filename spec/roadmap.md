@@ -368,11 +368,11 @@ T018阻塞：当前GitHub凭据缺 `workflow` scope，远程拒绝新增工作�
 
 ### T019 Fuji 部署及个人电脑真实钱包启动
 
-- 状态：DOING
+- 状态：VERIFY
 - 负责人：skelitalynn；AI助手实施。
 - 分支 / PR：`feat/001-local-completion` / PR #12，延续用户要求的当前进度。
 - 依赖：T015–T017；专用部署钱包测试AVAX、手机projectId。
 - 对应Spec：001第18节，AC-001-42/43/44。
 - 实施：核对官方链和代币；部署Factory并保存回执；提供mvp:fuji、独立本机数据和Core连接配置。
 - 验证：用户明确要求不运行CI测试；仅构建、启动健康与部署回执核对。真实钱包/资金流程由实际操作记录。
-- 当前证据：Fuji只读预检通过；专用部署钱包已创建，私钥只保存在Git忽略的受限文件；等待测试AVAX到账，不将待部署写为已部署。
+- 当前证据：Fuji Factory实际部署成功，区块58481369，清单 `deployments/fuji.json`；部署输入与已编译字节码及官方USDC构造参数一致，回执success。`mvp:fuji`构建并启动，health/config均200且返回43113及上述Factory。未运行CI/回归测试；Core真机交易及手机projectId仍待实际配置。

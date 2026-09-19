@@ -1,0 +1,10 @@
+{
+  "chainId": 43113,
+  "rpc": "https://api.avax-test.network/ext/bc/C/rpc",
+  "tokenAddress": "0x5425890298aed601595a70AB815c96711a31Bc65",
+  "factoryAddress": "0x91157cb05f702ff708fa7e7aa61ae116b64ff2f7",
+  "transactionHash": "0x95b53b1552fcb46d4c68ea2a640a44466eb212521b517ef9a341612874a8eff2",
+  "blockNumber": "58481369",
+  "deployer": "0x3CA0a7D8e54216E633B5356281a71682B5d0a680",
+  "mode": "Fuji official test USDC"
+}

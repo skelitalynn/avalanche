@@ -1,6 +1,6 @@
 # Core / Fuji 真实验收
 
-本地五钱包、手机尺寸截图及加速时间测试已经有独立命令；它们不能替代真实钱包与 Fuji 交易。当前没有 Fuji 部署清单、项目 WalletConnect projectId、测试账户余额或真机记录。
+本地五钱包、手机尺寸截图及加速时间测试已经有独立命令；它们不能替代真实钱包与 Fuji 交易。Fuji Factory已部署，公开清单位于 `deployments/fuji.json`。当前尚无项目 WalletConnect projectId、Core真机及完整业务验收记录。
 
 ## 先检查配置
 
@@ -14,7 +14,7 @@ npm run preflight:fuji
 
 ## 部署与验收交接
 
-用户已于2026-09-19明确授权Fuji部署。在操作者本机安全配置部署环境，使用现有 `deploy:fuji`；该脚本还要求 `CONFIRM_FUJI_DEPLOY=yes`。核对部署回执成功、Factory字节码、固定代币，再保存生成的 `.local/deployment-43113.json`。不得把本地TestUSDC地址替换到Fuji。
+用户已于2026-09-19明确授权Fuji部署。在操作者本机安全配置部署环境，使用现有 `deploy:fuji`；该脚本还要求 `CONFIRM_FUJI_DEPLOY=yes`。核对部署回执成功、Factory字节码、固定代币，再保存生成的 `deployments/fuji.json`。不得把本地TestUSDC地址替换到Fuji。
 
 单独配置 API 的 origin、数据库和加密密钥；前台设置 `VITE_DEFAULT_MODE=live`、`VITE_LOCAL_WALLETS=false`、`VITE_WALLETCONNECT_PROJECT_ID`，按 `.env.example` 对齐部署清单。手机使用可访问的 HTTPS 站点与同源 API；手机的 `127.0.0.1` 指向手机本身，不能直接访问电脑回环服务。站点部署和对外暴露需明确授权，本地启动器不会自动开放。
 
@@ -30,7 +30,7 @@ npm run preflight:fuji
 
 ## 用自己的Core钱包和测试币启动
 
-取得已经验证的 `.local/deployment-43113.json` 后，在自己的电脑执行：
+取得已经验证的 `deployments/fuji.json` 后，在自己的电脑执行：
 
 ```bash
 npm ci
@@ -44,3 +44,12 @@ npm run mvp:fuji
 手机连接时将 `.env.fuji.example` 复制为 `.env.fuji.local`，填写自己的WalletConnect projectId；手机访问需要可达站点，HTTPS反向代理的origin也需在文件中对应配置。启动器仅监听电脑回环地址，不会自行公开端口。
 
 按用户要求，T019不执行CI或回归套件；只构建启动所需产物、核对真实部署回执与健康接口。
+
+## 已部署结果（2026-09-19）
+
+- Factory：`0x91157cb05f702ff708fa7e7aa61ae116b64ff2f7`
+- 交易：`0x95b53b1552fcb46d4c68ea2a640a44466eb212521b517ef9a341612874a8eff2`，区块58481369，回执success。
+- 实际部署输入与本仓库编译的Factory字节码及官方USDC构造参数完全一致；Factory token()核对通过。
+- 本机启动构建完成，health/config为200，实际配置43113、6位USDC及上述Factory。
+- 用户已提供部署gas；部署私钥没有写入仓库，也不是应用运行所需配置。
+- 没有运行CI或回归套件，没有代替用户钱包执行入金/结算；手机WalletConnect尚缺projectId。

@@ -173,12 +173,12 @@ nonce 至少 16 字节随机，10 分钟有效；消息内容由服务端生成�
 
 ## 7. 实现与部署记录
 
-实际 ABI 由 T005 编译生成并供前后端共享，不手写另一套不一致 ABI；共享 schema 与枚举在 T003 建立。T013 已整合HTTP实现及编译生成的ABI；首次启动或显式新建会话生成部署记录，普通重启恢复原记录，尚无Fuji部署。
+实际 ABI 由 T005 编译生成并供前后端共享，不手写另一套不一致 ABI；共享 schema 与枚举在 T003 建立。T013 已整合HTTP实现及编译生成的ABI；首次启动或显式新建会话生成部署记录，普通重启恢复原记录，T019已部署Fuji Factory，清单见下表。
 
 | 网络 / Chain ID | 合约名称 / 地址 | ABI 路径 | 部署交易 / 代码版本 |
 | --- | --- | --- | --- |
 | 本地 / 31337 | 每个会话生成Factory，重启保留，关系按需创建 | packages/shared/src/abi.ts | .local/current.json 指向本轮deployment.json |
-| Fuji / 43113 尚未部署 | SituationFactory / SituationAgreement | packages/shared/src/abi.ts | T006 授权部署后记录 |
+| Fuji / 43113 | SituationFactory `0x91157cb05f702ff708fa7e7aa61ae116b64ff2f7`；关系按需创建 | packages/shared/src/abi.ts | `deployments/fuji.json`，成功交易 `0x95b53b1552fcb46d4c68ea2a640a44466eb212521b517ef9a341612874a8eff2` |
 
 T002 仅冻结上述定义；T003–T006 分别记录实现与应用验收。破坏性接口调整必须改 policyVersion/相关 Spec 并重新部署对应合约，不能对既有已签关系悄悄修改行为。
 
