@@ -11,7 +11,7 @@ npm run mvp:local
 
 已有仓库时先在干净的 `main` 上执行 `git pull --ff-only origin main`。等待终端出现 `Local MVP ready`，打开 **http://127.0.0.1:5174/**。请用这个准确地址，避免 `localhost` 与 `127.0.0.1` 的登录 Cookie/Origin 不同。
 
-启动器编译合约、构建前台、启动本地 Hardhat 链、部署 TestUSDC 和 Factory、给前五个开发账户各准备1000测试USDC，再启动 Fastify API 与前台。所有业务请求使用同源 `/api/v1`，钱包签名与资金操作落到本地合约，不使用 Mock 状态生成成功结果。
+启动器编译合约、构建前台。首次启动会建立本地 Hardhat 链、部署 TestUSDC 和 Factory、给前五个开发账户各准备1000测试USDC；后续启动恢复原链、交易和数据库，再启动 Fastify API 与前台。所有业务请求使用同源 `/api/v1`，钱包签名与资金操作落到本地合约，不使用 Mock 状态生成成功结果。
 
 ## 点通一次真实本地流程
 
@@ -36,7 +36,17 @@ npm run mvp:local
 | 127.0.0.1:3001 | 私有 API，仅回环；浏览器从前台同源代理访问 |
 | 127.0.0.1:8545 | 本地 EVM RPC，仅回环，Chain ID 31337 |
 
-保持启动终端打开。**Ctrl+C 停止这一轮的三个服务；重新启动会创建全新的本地链和数据库。** 同次运行刷新页面，业务数据仍在 API/链中；刷新后重新连接并签名登录即可。旧运行目录保留在 `.local/runs/<随机ID>/`，包括加密SQLite、密钥、公开部署信息，但不会被新链复用。旧目录不等于可恢复的链快照。`.local/current.json` 指向最近一次启动；这些文件都被 Git 忽略，不能提交或公开。
+保持启动终端打开。**Ctrl+C 停止服务；再次执行 `npm run mvp:local` 会恢复原会话。** 刷新后重新连接并签名登录即可查看原来的关系、记录和资金。数据库、密钥、链日志及部署清单位于 `.local/runs/<随机ID>/`；`.local/current.json` 指向当前会话。完整数据目录需一起保留，不能单独把旧数据库接到新链上；这些文件被 Git 忽略，不应公开。
+
+想重新演示，从零开始：
+
+```bash
+npm run mvp:new
+```
+
+这会建立独立会话并切换当前指针，保留旧目录。旧版本（T013）的会话没有链日志，不能升级为可恢复会话；看到提示后使用此命令。
+
+恢复时逐条核对交易与区块；日志损坏、密钥/数据库不匹配或 Hardhat/EDR 版本不同会停止启动，原数据保留。先保留完整目录，再按提示恢复匹配的依赖/数据；不要删除日志来“修复”。数据较多时重放会变慢。若自行设置 `LOCAL_DATA_HOME`，每次需使用相同目录；带中文和空格的路径也纳入启动测试。
 
 端口5174/3001/8545被占用时启动失败并保留原服务，请先关闭占用的程序再重试。本项目不会接管其他节点，也不修改本机服务配置。配置模板 `.env.example` 供单独启动 API/Fuji 的后续工作参考；`mvp:local` 自动生成本地配置，无需复制或填写密钥。Node的SQLite实验性提示不是启动失败。
 
@@ -50,24 +60,25 @@ npm run typecheck
 npm run typecheck:core
 npm test
 npm run test:core
+npm run test:chain-recovery
 npm run build:local
 npm run test:local
 npx playwright install chromium
-npm run mvp:local
+npm run test:acceptance
 ```
 
 `test:local` 会短暂占用三个服务端口，需在 `mvp:local` 未运行时执行。`test:core` 使用独立18545端口；它们会部署和操作本地测试合约。
 
-保持 `mvp:local` 运行，在另一个终端执行：
+`test:acceptance` 自动启动隔离临时会话，测试真实浏览器与重启恢复后清理，不改动日常会话。若要针对正在运行的 `mvp:local` 测试，在另一个终端执行：
 
 ```bash
 npm run test:live
 ```
 
-该测试通过页面中的五个开发钱包签名，核对链上正常70/70、A违约50/90的已付款结果，检查手机宽度，输出到 `artifacts/live/`。它会推进本地链时钟；跑完建议 Ctrl+C 后重新启动，得到干净会话。
+该测试通过页面中的五个开发钱包签名，核对链上正常70/70、A违约50/90的已付款结果，检查手机宽度，输出到 `artifacts/live/`。它会推进本地链时钟；跑完如需干净会话，请 Ctrl+C 后执行 `npm run mvp:new`。
 
 原 Mock 回归可单独执行 `npm run test:e2e`（自动在5173构建/预览）；它会覆盖前台产物，完成后重新执行 `mvp:local` 构建真实入口。首次安装 Chromium 可能需要系统浏览器依赖，按 Playwright 的实际提示安装。
 
 ## 验收边界
 
-这是真实本机 HTTP、加密数据库、签名认证及 EVM 合约交易；资产是 TestUSDC，钱包为受控开发身份。没有进行腾讯云部署、Fuji部署/资金交易、Core扩展或手机真机验收。原001全部32项复杂边界也没有整体验收；本次实际覆盖和已知限制见 [T013验证记录](../spec/verification/t013-local-integration.md)。
+这是真实本机 HTTP、加密数据库、签名认证及 EVM 合约交易；资产是 TestUSDC，钱包为受控开发身份。没有进行腾讯云部署、Fuji部署/资金交易、Core扩展或手机真机验收。32项业务AC按本地/真实层逐条记录，见 [完整验证矩阵](../spec/verification/t015-t018-local-completion.md)。真实钱包与Fuji准备步骤见 [真实验收指南](fuji-acceptance.md)。

@@ -34,3 +34,13 @@ for (const signal of ["SIGTERM", "SIGINT"] as const)
     await app.close();
     process.exit(0);
   });
+process.once("message", async (message) => {
+  if (message === "shutdown") {
+    await app.close();
+    if (process.connected) process.disconnect?.();
+  }
+});
+
+process.once("disconnect", () => {
+  void app.close();
+});
