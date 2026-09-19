@@ -51,7 +51,7 @@
 
 - 状态：DONE
 - 负责人：本次文档由 AI 助手执行；团队维护人待指定。
-- 分支 / PR：`docs/collaboration-rules` / 未创建。
+- 分支 / PR：`docs/collaboration-rules` / [PR #1](https://github.com/skelitalynn/avalanche/pull/1)（合并状态以 GitHub 为准）。
 - 依赖：T001。
 - 对应 Spec：[文档约定](README.md)、[开发规则](../AGENTS.md)。
 - 实施：建立自然语言转 Spec 的操作规则；明确任务认领、分支、PR、冲突与交接规则；更新功能和任务模板。
