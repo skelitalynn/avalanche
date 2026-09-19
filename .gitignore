@@ -1,0 +1,12 @@
+node_modules/
+.npm-cache/
+.playwright-browsers/
+dist/
+.env
+.env.*
+!.env.example
+test-results/
+playwright-report/
+.DS_Store
+
+artifacts/

@@ -1,10 +1,10 @@
 # Avalanche 开发参考
 
-资料核对日期：2026-09-19。以下为文档与工具入口核对，不代表本项目已完成 RPC 实测、领币或链上部署。
+资料核对日期：2026-09-19。T002 已完成下述 Fuji 网络与 USDC 元数据的只读 RPC 核对；尚未领币、部署或执行链上写入，不代表钱包或产品流程验收通过。
 
 ## 开发起点
 
-[Avalanche Builder Hub](https://build.avax.network/) 提供开发文档与开发者工具；平台区分在 C-Chain 构建应用和创建自己的 L1 两条路线。本项目已确认采用 Fuji C-Chain，使用 Core Wallet 与 wagmi + viem；业务确定后再决定是否需要自定义合约，自建 L1 不在当前范围内。完整选型见 [技术架构](architecture.md)。
+[Avalanche Builder Hub](https://build.avax.network/) 提供开发文档与开发者工具；平台区分在 C-Chain 构建应用和创建自己的 L1 两条路线。本项目已确认采用 Fuji C-Chain，使用 Core Wallet 与 wagmi + viem，并需要自定义 Solidity 合约；自建 L1 不在当前范围内。项目负责人已确认黑客松手册为开发参考，没有必须使用全部工具的要求。完整选型见 [技术架构](architecture.md)。
 
 ## Fuji C-Chain
 
@@ -34,6 +34,26 @@ curl --fail-with-body --silent --show-error --max-time 20 \
 1. 从 [Core 官网](https://core.app) 获取钱包，按 [官方说明](https://support.avax.network/en/articles/6224787-how-to-connect-to-the-fuji-testnet) 开启测试网模式。
 2. 使用 [Core Testnet Faucet](https://core.app/tools/testnet-faucet) 或 [Builder Hub Faucet](https://build.avax.network/console/primary-network/faucet) 申请测试 AVAX，具体条件以页面为准。
 3. 在钱包或测试网浏览器确认目标地址的到账结果，再执行需要 Gas 的测试。
+
+## SituationSHIT 测试资产与钱包连接
+
+### Fuji USDC
+
+- 资产：Circle 官方 Fuji 测试 USDC，合约 `0x5425890298aed601595a70AB815c96711a31Bc65`；来源为 [Circle USDC 地址表](https://developers.circle.com/stablecoins/usdc-contract-addresses) 的 Avalanche Fuji 项，不采用主网地址或 USDC.e。
+- 精度：6，内部金额使用最小单位整数，1 USDC = 1,000,000 单位；JSON 金额传十进制字符串。
+- 来源：[Circle Faucet](https://faucet.circle.com/)，选择 USDC + Avalanche Fuji。页面当前说明每个地址/网络每 2 小时可申请 20 USDC，实际限额和人工验证以页面为准。它与用于 Gas 的测试 AVAX 是两种资产。
+- 本地合约测试可使用 6 位精度的 ERC-20 测试替身；真实 Fuji 验收必须使用上述官方测试资产，不以自部署 MockUSDC 替代。
+- 启动与部署前复核 Chain ID、代币地址、代码非空及 `decimals()`；不匹配则阻止相应链写入。合约地址集中由本节定义，其他 Spec 引用本节。
+
+2026-09-19 只读核对：向本节 Fuji RPC 调用 `eth_chainId` 得 `0xa869`；对上述 USDC 调用 `eth_getCode` 得非空代码（1852 bytes）；`eth_call` 调用 `decimals()`（data 为 `0x313ce567`）得 6。三项请求均成功；没有提交交易、申请测试币或读取用户私钥。
+
+### Core 桌面与手机连接
+
+- 桌面：Core Extension，通过 EIP-6963 发现的 EIP-1193 provider 接入 wagmi。
+- 手机：Core Mobile 使用 WalletConnect；不假设手机存在扩展注入的 `window.avalanche`。依据 [Core 官方说明](https://docs.core.app/docs/intro/)。
+- wagmi 使用 `walletConnect` connector，配置项目自己的 `projectId` 和站点 metadata，参考 [wagmi 官方接口](https://wagmi.sh/react/api/connectors/walletConnect)。不得复制文档里的示例 projectId 作为项目配置。
+- T003 提供 `VITE_WALLETCONNECT_PROJECT_ID` 示例字段；实际 ID 和允许来源由项目环境提供。缺失时显示“手机钱包连接尚未配置”，不能伪装成已连接；不影响无需钱包的页面及本地模拟测试。
+- T004 验证桌面 Core 扩展、手机浏览器与 Core App 的连接/返回、切网、账号变更和拒签；模拟通过不代表真机通过。此项只冻结接入方案，尚未执行真机测试。
 
 ## 工具选择
 
