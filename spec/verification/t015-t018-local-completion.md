@@ -1,6 +1,6 @@
 # T015–T018 本地完成与分层验证
 
-日期：2026-09-19。任务分支：`feat/001-local-completion`；基于 main 的路演 PR #10，保留其文件。工作目录 `/tmp/avalanche-local-completion`。负责人 skelitalynn，AI实施与自检；不是独立队友评审。PR链接待补。GitHub 拒绝工作流推送（OAuth 缺 `workflow` scope），三系统CI未执行。
+日期：2026-09-19。任务分支：`feat/001-local-completion`；基于 main 的路演 PR #10，保留其文件。工作目录 `/tmp/avalanche-local-completion`。负责人 skelitalynn，AI实施与自检；不是独立队友评审。[PR #12](https://github.com/skelitalynn/avalanche/pull/12)，合并状态以GitHub为准。GitHub 拒绝工作流推送（OAuth 缺 `workflow` scope），三系统CI未执行。
 
 ## 已实现
 
@@ -11,7 +11,7 @@
 
 ## 本地命令证据
 
-使用 Node24.13.0。当前 Linux 实测：18项单元测试、16项合约/API用例、1项持久链恢复测试、1项多场景启动器测试、13项Playwright回归通过；真实五钱包浏览器验收及完整重启复验通过。最终代码及CI状态在交付时补齐。
+使用 Node24.13.0。当前 Linux 实测：18项单元测试、16项合约/API用例、1项持久链恢复测试、1项多场景启动器测试、13项Playwright回归通过；真实五钱包浏览器验收及完整重启复验通过。上述命令已完成本机复验；远程无已启用CI检查，工作流写入被GitHub拒绝。
 
 命令：`contracts:build`、`typecheck`、`typecheck:core`、`npm test`、`test:core`、`test:chain-recovery`、`build:local`、`test:local`、`test:acceptance`、`build`、`test:e2e`。真实浏览器七类页面覆盖1440/390/320px，输出 `artifacts/live`；Mock截图和服务完全独立。
 
@@ -68,6 +68,6 @@ H：`contracts/test/core.test.ts` 真本地EVM；A：同文件真实Fastify/SQLi
 
 ## 外部条件与限制
 
-Fuji只读预检在区块58481121确认43113、官方测试USDC代码和6位精度。未配置WalletConnect projectId，无Fuji部署清单；未提供可操作的Core设备、五个测试账户/资金，且真实48+72小时未经过。没有部署、转账或用加速本地结果冒充真实验收。
+Fuji只读预检在区块58481121确认43113、官方测试USDC代码和6位精度。未配置WalletConnect projectId，无Fuji部署清单；未提供可操作的Core设备、五个测试账户/资金，且真实48+72小时未经过。用户随后明确授权Fuji部署，将作为后续T019交付；本记录没有部署、转账或用加速本地结果冒充真实验收。
 
 恢复实现固定Hardhat/EDR版本，日志重放成本随操作数增长，仅面向本地Demo；原T013无链日志的历史会话不能直接恢复。测试使用公开开发身份/TestUSDC，不涉及真实资产。更换电脑请全新克隆并启动；迁移已有会话需保留整套数据与匹配依赖，不能仅复制SQLite。

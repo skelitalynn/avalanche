@@ -350,7 +350,10 @@ export function useLiveController() {
       timeout: 60000,
     });
     assertIdentity();
-    if (!same(receipt.from, p.account) || (p.target && (!receipt.to || !same(receipt.to, p.target))))
+    if (
+      !same(receipt.from, p.account) ||
+      (p.target && (!receipt.to || !same(receipt.to, p.target)))
+    )
       throw Error("交易回执的钱包或目标与待确认记录不一致");
     if (receipt.status !== "success") {
       savePending(null);
@@ -391,6 +394,7 @@ export function useLiveController() {
       args,
       account: address,
     });
+    assertIdentity();
     const tx = await wallet.writeContract({
       address: target,
       abi,
@@ -538,7 +542,6 @@ export function useLiveController() {
     const verified = await verifyEvidence(body, {
       chainId: settings.chainId,
       situation: selected,
-      target,
       disputeId: s.currentDisputeId,
       owner: ev.owner,
       commitment: ev.commitment,

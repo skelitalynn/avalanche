@@ -318,50 +318,50 @@
 
 ### T015 将真实业务页面统一到 Radix Themes
 
-- 状态：VERIFY
+- 状态：DONE
 - 负责人：skelitalynn；AI助手实施、自检。
-- 分支 / PR：`feat/001-local-completion` / 待创建。
+- 分支 / PR：`feat/001-local-completion` / [PR #12](https://github.com/skelitalynn/avalanche/pull/12)。
 - 依赖：T013、T014。
 - 对应 Spec：[001](features/001-situationship.md) AC-001-37，以及原页面/交易AC。
 - 实施：拆分LiveApp真实视图、复用Radix基础控件、统一排版、补交易与证据展示边界。
 - 验证：typecheck、npm test、build、test:e2e、test:live；桌面/手机截图。
 - 完成条件：真实本机五钱包闭环与页面验证通过，原业务规则保持。
-- 完成证据：本地实现与检查已通过，逐AC证据见 [T015–T018记录](verification/t015-t018-local-completion.md)；交付复核中。
+- 完成证据：本地实现与检查已通过，逐AC证据见 [T015–T018记录](verification/t015-t018-local-completion.md)；Node24本机检查与真实本地恢复验收通过，PR合并状态独立记录。
 
 ### T016 实现本地链与数据库的可靠恢复
 
-- 状态：VERIFY
+- 状态：DONE
 - 负责人：skelitalynn；AI助手实施、自检。
-- 分支 / PR：`feat/001-local-completion` / 待创建。
+- 分支 / PR：`feat/001-local-completion` / [PR #12](https://github.com/skelitalynn/avalanche/pull/12)。
 - 依赖：T013。
 - 对应 Spec：[001](features/001-situationship.md) AC-001-38/39/40。
 - 实施：Hardhat持久操作日志、先落盘后执行、完整重放核对、稳定会话与数据库绑定、显式新会话、异常清理与端口保护。
 - 验证：链恢复、崩溃窗口、损坏拒绝、数据库一致性、启动器重启测试。
 - 完成条件：真实交易及私有数据跨重启保留；损坏时失败关闭且保留原数据。
-- 完成证据：本地实现与检查已通过，逐AC证据见 [T015–T018记录](verification/t015-t018-local-completion.md)；交付复核中。
+- 完成证据：本地实现与检查已通过，逐AC证据见 [T015–T018记录](verification/t015-t018-local-completion.md)；Node24本机检查与真实本地恢复验收通过，PR合并状态独立记录。
 
 ### T017 补齐32项业务AC的本地验证与异常恢复
 
-- 状态：VERIFY
+- 状态：DONE
 - 负责人：skelitalynn；AI助手实施、自检。
-- 分支 / PR：`feat/001-local-completion` / 待创建。
+- 分支 / PR：`feat/001-local-completion` / [PR #12](https://github.com/skelitalynn/avalanche/pull/12)。
 - 依赖：T005本地实现、T015、T016。
 - 对应 Spec：[001](features/001-situationship.md) AC-001-01至32。
 - 实施：逐条核对现有用例，补缺失边界和恢复用例，修复实现缺陷；本地与真实设备/网络层分别标记。
 - 验证：test:core、test:live、浏览器故障及恢复；保存逐AC证据矩阵。
 - 完成条件：本地矩阵完整且每项有实测结果；不将缺少设备/测试币的真实层标为通过。
-- 完成证据：本地实现与检查已通过，逐AC证据见 [T015–T018记录](verification/t015-t018-local-completion.md)；交付复核中。
+- 完成证据：本地实现与检查已通过，逐AC证据见 [T015–T018记录](verification/t015-t018-local-completion.md)；Node24本机检查与真实本地恢复验收通过，PR合并状态独立记录。
 
 ### T018 验证跨平台启动与钱包/测试网前置条件
 
 - 状态：VERIFY
 - 负责人：skelitalynn；AI助手实施、自检。
-- 分支 / PR：`feat/001-local-completion` / 待创建。
+- 分支 / PR：`feat/001-local-completion` / [PR #12](https://github.com/skelitalynn/avalanche/pull/12)。
 - 依赖：T016；真实设备与Fuji测试账户/资金。
 - 对应 Spec：[001](features/001-situationship.md) AC-001-41、T004/T006真实验收部分。
 - 实施：跨平台CI模板、无私有镜像依赖安装、Core/WalletConnect配置诊断、Fuji只读预检与明确的验收流程。
 - 验证：三系统CI运行、网络配置预检；真实设备/交易条件具备时执行并记录回执与业务结果。
 - 完成条件：平台运行证据齐全；真实设备/Fuji逐项报告，外部条件不足明确记录。
-- 完成证据：本地实现与检查已通过，逐AC证据见 [T015–T018记录](verification/t015-t018-local-completion.md)；交付复核中。
+- 完成证据：仅Linux实测通过、Fuji只读预检通过；跨平台模板与指南已交付，实际Windows/macOS及Core/Fuji验收未完成。见 [记录](verification/t015-t018-local-completion.md)。
 
-T018阻塞：当前GitHub凭据缺 `workflow` scope，远程拒绝新增工作流；模板已提供，Windows/macOS实际执行待授权后启用。Core真机/Fuji缺projectId、测试设备/账户资金及部署授权，已提供只读预检与执行指南；未标记真实验收通过。
+T018阻塞：当前GitHub凭据缺 `workflow` scope，远程拒绝新增工作流；模板已提供，Windows/macOS实际执行待授权后启用。Core真机/Fuji缺projectId、测试设备/账户资金，已提供只读预检与执行指南；未标记真实验收通过。
