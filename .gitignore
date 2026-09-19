@@ -10,3 +10,7 @@ playwright-report/
 .DS_Store
 
 artifacts/
+contracts/artifacts/
+contracts/cache/
+.local/
+*.sqlite*

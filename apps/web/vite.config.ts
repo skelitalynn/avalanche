@@ -10,7 +10,15 @@ export default defineConfig(({ mode }) => {
       strictPort: true,
       proxy: {
         "/api": {
-          target: env.API_PROXY_TARGET || "http://127.0.0.1:3000",
+          target: env.API_PROXY_TARGET || "http://127.0.0.1:3001",
+          changeOrigin: true,
+        },
+      },
+    },
+    preview: {
+      proxy: {
+        "/api": {
+          target: env.API_PROXY_TARGET || "http://127.0.0.1:3001",
           changeOrigin: true,
         },
       },

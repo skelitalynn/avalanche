@@ -1,0 +1,296 @@
+.live-app {
+  min-height: 100vh;
+}
+.live-header {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 22px max(24px, calc((100vw - 1160px) / 2));
+  background: white;
+  border-bottom: 1px solid var(--line);
+}
+.live-header > .brand {
+  align-items: center;
+}
+.live-header > a:last-child {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--rose);
+}
+.live-main {
+  max-width: 1160px;
+  padding: 34px 24px;
+}
+.live-main > .card,
+.live-main > .relationship-card {
+  margin-bottom: 22px;
+}
+.wallet-bar {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.wallet-bar > div:last-child {
+  margin-left: auto;
+}
+.wallet-bar p {
+  font-size: 11px;
+}
+.live-tabs {
+  display: flex;
+  gap: 10px;
+  overflow: auto;
+  margin: 25px 0;
+}
+.live-tabs button {
+  border: 0;
+  background: transparent;
+  white-space: nowrap;
+  padding: 12px;
+  color: #887c8c;
+  border-bottom: 2px solid transparent;
+  font-size: 12px;
+}
+.live-tabs button.selected {
+  border-color: var(--rose);
+  color: var(--rose);
+}
+.live-list {
+  display: grid;
+  gap: 10px;
+}
+.live-list button {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 15px;
+  background: #faf8fa;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  text-align: left;
+  font-size: 12px;
+}
+.live-list button.selected {
+  border-color: #d391a4;
+}
+.live-list button small {
+  margin-left: auto;
+}
+.live-create {
+  max-width: 850px;
+}
+.live-create .form-grid {
+  margin-top: 25px;
+}
+.live-summary {
+  padding-bottom: 24px;
+  min-height: 170px;
+}
+.live-summary h2 {
+  font-size: 25px;
+  margin: 22px 0 14px;
+}
+.live-summary p {
+  color: #a57b88;
+}
+.live-main .card > .button-row {
+  margin-top: 22px;
+}
+.live-metrics {
+  display: flex;
+  gap: 35px;
+  margin: 25px 0;
+}
+.live-metrics > div {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.live-metrics strong {
+  font-size: 23px;
+  font-weight: 500;
+  color: #985c73;
+}
+.live-metrics span {
+  font-size: 11px;
+  color: var(--muted);
+}
+.mono {
+  font-family: monospace;
+  font-size: 11px;
+  overflow-wrap: anywhere;
+  word-break: break-all;
+}
+.live-invite {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-wrap: anywhere;
+}
+.live-invite a {
+  color: var(--rose);
+}
+.live-invite svg {
+  vertical-align: middle;
+}
+.live-status {
+  background: #edf4f0;
+  padding: 12px 17px;
+  border-radius: 7px;
+  margin-bottom: 20px;
+  color: #61836d;
+  font-size: 12px;
+}
+.pending-card p {
+  margin-bottom: 15px;
+}
+.live-subheading {
+  margin-top: 30px;
+}
+.evidence-form {
+  margin-top: 30px;
+  padding-top: 25px;
+  border-top: 1px solid var(--line);
+}
+.evidence-form textarea {
+  display: block;
+  width: 100%;
+  margin: 12px 0 20px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+  font: inherit;
+  color: var(--ink);
+  resize: vertical;
+}
+.evidence-form input[type="file"] {
+  height: auto;
+  padding: 12px;
+  font-size: 12px;
+}
+.evidence-list > div {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-top: 20px;
+  font-size: 12px;
+}
+.evidence-list article {
+  margin-top: 20px;
+  padding: 20px;
+  background: #f9f5f8;
+  border-radius: 8px;
+}
+.evidence-list article p {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.evidence-list img {
+  max-width: 100%;
+  max-height: 320px;
+  object-fit: contain;
+}
+.evidence-list .button {
+  margin-top: 12px;
+}
+.chain-details {
+  padding: 20px 0;
+  font-size: 12px;
+  color: #897b90;
+}
+.chain-details p {
+  margin-top: 14px;
+}
+.live-footer {
+  padding: 25px 0;
+  font-size: 11px;
+  color: var(--muted);
+  display: flex;
+  gap: 7px;
+  align-items: center;
+}
+.live-main .form-grid.three label {
+  display: block;
+}
+.live-main .payout-grid h2 {
+  font-size: 32px;
+}
+.live-header .pill {
+  font-size: 10px;
+}
+.live-main .alert {
+  overflow-wrap: anywhere;
+}
+.live-main .alert > svg {
+  flex-shrink: 0;
+}
+@media (max-width: 760px) {
+  .live-header {
+    padding: 17px 20px;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .live-header > .brand {
+    font-size: 17px;
+  }
+  .live-header > a:last-child {
+    font-size: 10px;
+  }
+  .live-header .pill {
+    order: 3;
+  }
+  .live-main {
+    padding: 26px 20px;
+  }
+  .wallet-bar {
+    flex-wrap: wrap;
+  }
+  .wallet-bar > div:last-child {
+    margin-left: 0;
+    width: 100%;
+  }
+  .wallet-bar .button {
+    flex: 1;
+  }
+  .live-list button {
+    flex-wrap: wrap;
+    gap: 9px;
+  }
+  .live-list button > span {
+    width: 100%;
+  }
+  .live-list button small {
+    margin-left: auto;
+  }
+  .live-summary h2 {
+    font-size: 20px;
+  }
+  .live-summary p {
+    font-size: 10px;
+  }
+  .live-metrics {
+    gap: 18px;
+  }
+  .live-metrics strong {
+    font-size: 20px;
+  }
+  .live-metrics span {
+    font-size: 9px;
+  }
+  .live-create .form-grid {
+    grid-template-columns: 1fr;
+  }
+  .live-main .button-row {
+    gap: 9px;
+  }
+  .live-main .button-row .button {
+    font-size: 11px;
+  }
+  .chain-details .mono {
+    font-size: 10px;
+  }
+  .live-footer {
+    font-size: 10px;
+    align-items: flex-start;
+  }
+}

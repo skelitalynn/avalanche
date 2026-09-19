@@ -1,6 +1,6 @@
 # 技术架构
 
-状态：基础技术选型已确认（2026-09-19）。SituationSHIT 业务规则和实现边界已由 T002 冻结；T010 已交付独立 Mock 前台并锁定其依赖，真实后端与合约由后续任务完成。
+状态：基础技术选型已确认（2026-09-19）。SituationSHIT 业务规则和实现边界已由 T002 冻结；T010 已交付独立 Mock 前台并锁定其依赖，T013 整合真实本地 API、钱包与合约；完整AC和Fuji验收仍待完成。
 
 确认来源：项目负责人在本次需求沟通中认可 TypeScript、React + Vite、Core Wallet、Fuji C-Chain、wagmi + viem、Vitest + Playwright，以及按需使用 Solidity + Hardhat 的方案。
 
@@ -17,8 +17,8 @@
 | 单元与集成测试 | Vitest，覆盖业务规则和可模拟的钱包/RPC 分支 |
 | 页面流程测试 | Playwright，覆盖关键页面操作；真实 Core/Fuji 验收另外记录 |
 | 自定义智能合约 | 需要，使用 Solidity + Hardhat 开发、测试和部署；负责协议、托管、投票和结算 |
-| 后端与数据 | TypeScript + Fastify，同源 HTTP API；SQLite 存结构化数据，非公开目录存加密附件；不引入独立索引服务 |
-| 开发运行时、包管理器与依赖版本 | 前台推荐 Node 24、最低 22.12，npm workspaces 与 package-lock；后端/合约在 T003 继续确定 |
+| 后端与数据 | TypeScript + Fastify，同源 HTTP API；SQLite 存结构化数据与加密附件（本地Demo的有界图片存为加密数据字段）；不引入独立索引服务 |
+| 开发运行时、包管理器与依赖版本 | 工程要求 Node 24.13+（Node 24），npm workspaces 与 package-lock；API/合约由 T013 集成并由 package-lock 锁定 |
 
 普通 C-Chain 交互统一使用 wagmi + viem；AvalancheJS 和 Avalanche Client SDK 暂不引入，需要其特有 API 时再更新本文件。Avalanche CLI、HyperSDK 和自建 L1 不在本次基础方案内。
 
@@ -52,7 +52,7 @@ SituationSHIT 按以下 Web + C-Chain 边界组织；链上维护资金和权威
 
 部署一个 SituationFactory，每个关系部署一个不可升级 SituationAgreement；SituationVault 和 DisputeResolution 为 Agreement 内部 Solidity 模块，使用同一份状态与托管余额，不独立部署。Factory 不保管关系资金。只有本关系状态机能决定分配，没有管理员裁决、升级或提款后门。裁决先锁定权益，再隔离尝试向原持有人付款；失败保留待付项，允许任意地址重试，不能改变收款人。完整权限与事件见 contracts.md。
 
-前台已位于 `apps/web`。`src/App.tsx` 为七页界面，`src/data/types.ts` 是视图契约，`src/data/service.ts` 是唯一服务适配入口，`mockService.ts` 负责状态转换和本机持久化，`httpService.ts` 负责可配置的 HTTP/SIWE 连接、Cookie 会话及只读视图映射。页面通过 `SituationService` 读取状态与异步发送动作，不直接读写 localStorage。真实业务写入仍需合约 ABI、部署地址与后端实现，详见 [前台演示指南](../docs/frontend-demo.md)及 [003 Spec](features/003-backend-adapter.md)。
+前台已位于 `apps/web`。`src/App.tsx` 为七页演示界面，`src/data/types.ts` 是视图契约，`src/data/service.ts` 是演示服务适配入口，`mockService.ts` 负责状态转换和本机持久化，`httpService.ts` 提供 HTTP/SIWE 连接、Cookie 会话及只读视图映射。页面通过 `SituationService` 读取状态与异步发送动作，不直接读写 localStorage。真实流程由 `main.tsx` 独立选择 `live/LiveApp.tsx`，经 `live/api.ts` 与 wagmi/viem 接入，不将链上状态塞进 `DemoState`，详见 [前台演示指南](../docs/frontend-demo.md)。
 
 T010 的 Mock 仅用于截图与可点击演示，不能代替 SIWE、服务端权限、链上托管或真实交易验收。路由为 `#/页面名`，无需服务端路由回退。服务返回的金额为整数微 USDC；显示才转换为小数。演示身份切换与时间推进只存在于 Mock 控制面板。
 
@@ -75,18 +75,27 @@ T010 的 Mock 仅用于截图与可点击演示，不能代替 SIWE、服务端�
 
 ## 链下边界与安全
 
-- 后端：Fastify JSON Schema 校验请求/响应，钱包登录采用 SIWE；不保管用户私钥，不代签链上交易。每次私有访问按已登记 Factory、角色和本案状态重新授权，RPC 失败关闭访问。
+- 后端：Fastify处理HTTP，Zod校验请求字段，响应通过白名单组装，钱包登录采用 SIWE；不保管用户私钥，不代签链上交易。每次私有访问按已登记 Factory、角色和本案状态重新授权，RPC 失败关闭访问。
 - 数据：SQLite 事务与唯一约束保证双边确认、幂等请求和计数一致；正文和附件使用 AES-256-GCM 加密，32 字节环境密钥、每次随机 12 字节 IV 和认证标签；密钥不进数据库或仓库。后端能够解密，不声称端到端加密。
-- 文件：附件位于公开静态目录以外，图片重编码去 EXIF；读取经鉴权 API。禁止任意远程 URL 抓取。没有敏感内容历史备份；到期 API 立即拒读，后台清理至多 24 小时完成，启动时补清理。
+- 文件：附件在本地版本使用 SQLite 加密字段存储，数据库位于公开静态目录以外，图片重编码去 EXIF；读取经鉴权 API。禁止任意远程 URL 抓取。没有敏感内容历史备份；到期 API 立即拒读，后台清理至多 24 小时完成，启动时补清理。
 - 同步：每次业务读取核对链上状态与观测区块，不用本地记录决定资金分配。链下记录可能短暂落后链状态，终止后新产生的记录在同步时标无效；链上资金仍是权威。
 - 信任边界：钱包负责签名，链/RPC 提供状态，服务端负责私有内容与访问控制，监督人负责判断事实。哈希只能校验内容一致，不能证明证据真实性或保证内容可用。
 
-技术依据：[Fastify 校验与序列化](https://fastify.dev/docs/latest/Reference/Validation-and-Serialization/)、[SIWE 标准](https://eips.ethereum.org/EIPS/eip-4361)、[Node.js SQLite](https://nodejs.org/api/sqlite.html)。具体兼容版本及 SQLite 驱动在 T003 锁定；本节是选型，不声称已安装运行。
+技术依据：[Fastify 校验与序列化](https://fastify.dev/docs/latest/Reference/Validation-and-Serialization/)、[SIWE 标准](https://eips.ethereum.org/EIPS/eip-4361)、[Node.js SQLite](https://nodejs.org/api/sqlite.html)。具体依赖由package-lock锁定，SQLite使用Node24内置node:sqlite；本地实现与实际运行证据见T013，不能据此声明已通过完整生产验收。
 
 ## 工程落点与后续前置条件
 
-T003 建立 `apps/web`（React/Vite）、`apps/api`（Fastify）、`packages/shared`（schema/类型/枚举）与 `contracts`（Hardhat）工作区；安装、开发、构建、类型检查、测试命令以实际生成的 package.json 为准，不预写不存在的可运行命令。后续若先交付 mock 前台，需单独 Spec 标注与真实服务/钱包的边界。
+T013已整合 `apps/web`（React/Vite）、`apps/api`（Fastify）、`packages/shared`（schema/类型/枚举）和 `contracts`（Hardhat）目录；合约由根Hardhat配置管理，其他三个目录为npm工作区。实际命令见根package.json和README；Mock与真实入口的边界分别见002 Spec及001第16节。
 
 配置示例需要包括 API/站点 origin、Fuji RPC、Factory 地址（部署后提供）、WalletConnect projectId、数据库/私有附件路径和加密密钥字段。前端只读公开配置，服务密钥不能使用 VITE_ 前缀。
 
 T004 可实施桌面 Core 与手机 WalletConnect；缺实际 projectId 只阻塞相应真实连接验收，不改变连接方案。T006 的部署、测试资金和真实链上交易需另行授权；前台和文档不得把本地/Mock 通过写成 Fuji 通过。
+
+
+## T013 个人电脑启动
+
+`npm run mvp:local` 编译/构建后由 `scripts/local.ts` 顺序启动回环 Hardhat、部署、Fastify、Vite preview。运行时路径由当前检出目录解析，默认5174/3001/8545；没有服务器IP、SSH或Nginx依赖。Node子进程使用 `process.execPath`，不依赖bash的环境变量赋值或系统包管理器。
+
+`build:local` 显式启用真实默认入口和本地开发钱包；普通build默认Mock。前端没有后台密钥；本地账户由Hardhat持有。API通过SIWE验证真实签名，前台从本机RPC查询回执。启动器独占端口，每轮新建链和对应私有目录，Ctrl+C清理其子进程。数据库/密钥/部署清单位于忽略的 `.local/runs/`；旧目录不自动恢复到新链。具体步骤见 [本地指南](../docs/local-mvp.md)。
+
+有界证据图片的存储从原计划的私有文件目录调整为SQLite加密字段，保持鉴权内容路由不变，减少本机安装依赖；不把数据库暴露为静态文件。T013是本地集成，原32项AC和真实Fuji的验证边界见 [验证记录](verification/t013-local-integration.md)。

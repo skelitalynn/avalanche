@@ -1,0 +1,16 @@
+{
+  "mode": "local EVM + real API + built-in local development wallets; not real Core/Fuji",
+  "chainId": 31337,
+  "normal": "0xcafac3dd18ac6c6e92c921884f9e4176737c052c",
+  "breach": "0x9f1ac54bef0dd2f6f3462ea0fa94fc62300d3a8e",
+  "normalPaid": [
+    "70000000",
+    "70000000"
+  ],
+  "breachPaid": [
+    "50000000",
+    "90000000"
+  ],
+  "browserErrors": [],
+  "externalRequests": []
+}

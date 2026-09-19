@@ -1,0 +1,13 @@
+{
+  "name": "@situationshit/api",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "dependencies": {
+    "@fastify/cookie": "^11.1.2",
+    "@fastify/multipart": "^10.1.1",
+    "@fastify/rate-limit": "^11.2.0",
+    "fastify": "^5.12.5",
+    "sharp": "^0.35.4"
+  }
+}
