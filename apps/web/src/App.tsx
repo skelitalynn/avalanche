@@ -400,6 +400,23 @@ export default function App() {
     { p: "jury" as Page, label: "好友监督", icon: UsersThree },
     { p: "ended" as Page, label: "关系结算", icon: Wallet },
   ];
+  const journey = [
+    "填写约定",
+    "资金与好友",
+    "双方签署",
+    "存入资金",
+    "关系已建立",
+  ];
+  const journeyStep =
+    page === "create"
+      ? 0
+      : page === "invite"
+        ? s.stage === "invited"
+          ? 2
+          : s.stage === "funding"
+            ? 3
+            : 4
+        : 4;
   return (
     <div className={`app ${page === "home" ? "landing-app" : ""}`}>
       <a className="skip-link" href="#content">
@@ -447,7 +464,7 @@ export default function App() {
       <div className="workspace">
         <header className="topbar">
           <a className="mobile-brand" href="#/home">
-            <Heart weight="fill" /> SituationSHIT
+            Situation<span>SHIT</span> <b>↗</b>
           </a>
           <div className="breadcrumb">
             OUR SITUATION <span>/</span>{" "}
@@ -472,6 +489,28 @@ export default function App() {
             </span>
           </div>
         </header>
+        {page !== "home" && (
+          <nav className="journey" aria-label="建立关系进度">
+            <ol>
+              {journey.map((label, index) => (
+                <li
+                  key={label}
+                  className={
+                    index === journeyStep
+                      ? "current"
+                      : index < journeyStep
+                        ? "complete"
+                        : ""
+                  }
+                  aria-current={index === journeyStep ? "step" : undefined}
+                >
+                  <span>{index < journeyStep ? "✓" : index + 1}</span>
+                  {label}
+                </li>
+              ))}
+            </ol>
+          </nav>
+        )}
         <main id="content" tabIndex={-1}>
           {error && (
             <div className="alert" role="alert">
@@ -517,20 +556,16 @@ export default function App() {
                     你的基金始终属于你
                   </div>
                 </div>
-                <div className="hero-image">
-                  <img
-                    src="/assets/together.jpg"
-                    alt="两个人的手在日落前合成一颗心"
-                  />
+                <div
+                  className="hero-image hero-art"
+                  role="img"
+                  aria-label="两个相互靠近的抽象人物"
+                >
+                  <span className="orb orb-one" />
+                  <span className="orb orb-two" />
+                  <Heart className="art-heart" size={46} />
                   <span className="photo-label">FOR THE TWO OF US.</span>
-                  <div className="photo-caption">
-                    <Heart size={24} weight="fill" />
-                    <span>
-                      把模糊的关系，
-                      <br />
-                      <strong>写成清楚的约定。</strong>
-                    </span>
-                  </div>
+                  <div className="photo-caption">你怎么想？我们聊聊。</div>
                 </div>
               </section>
               <section className="landing-bottom">
