@@ -308,7 +308,7 @@
 
 - 状态：DONE
 - 负责人：skelitalynn；AI 助手实施及自检。
-- 分支 / PR：`feat/002-radix-ui` / 待创建。
+- 分支 / PR：`feat/002-radix-ui` / [PR #9](https://github.com/skelitalynn/avalanche/pull/9)（合并状态以 GitHub 为准）。
 - 依赖：T010、T012、T013；用户授权只重构 UI。
 - 对应 Spec：[002](features/002-demo-frontend.md) AC-002-01 至08、AC-002-11/12。
 - 实施：审查现有七页与断言；接入 Radix Themes；拆出页面、外壳、展示组件、演示面板与投票 Dialog；清理叠加样式，采用米白/墨绿/青柠的编辑式层级。
