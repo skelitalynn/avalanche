@@ -303,3 +303,15 @@
 - 验证：Node24 下 npm ci、contracts:build、typecheck、typecheck:core、npm test、test:core、build、test:e2e、test:live；启动器端口冲突/退出/重新启动验证。
 - 完成条件：新增四项AC有实际证据；代码推送并PR合并状态独立记录；不声称已完成完整32项或Fuji验收。
 - 完成证据：2026-09-19，Node24下干净安装、合约编译、双构建/类型检查、17项单测、11项API/合约测试、启动器多场景集成、11项浏览器回归及五身份真实本地闭环通过；正常实际70/70、A违约实际50/90，无外部HTTP请求。详见 [T013验证记录](verification/t013-local-integration.md)。本机Linux验证，不代表Windows/macOS、Core/Fuji或全部32项验收。PR合并状态单独核对。
+
+### T014 使用 Radix Themes 重构前台 UI
+
+- 状态：DONE
+- 负责人：skelitalynn；AI 助手实施及自检。
+- 分支 / PR：`feat/002-radix-ui` / [PR #9](https://github.com/skelitalynn/avalanche/pull/9)（合并状态以 GitHub 为准）。
+- 依赖：T010、T012、T013；用户授权只重构 UI。
+- 对应 Spec：[002](features/002-demo-frontend.md) AC-002-01 至08、AC-002-11/12。
+- 实施：审查现有七页与断言；接入 Radix Themes；拆出页面、外壳、展示组件、演示面板与投票 Dialog；清理叠加样式，采用米白/墨绿/青柠的编辑式层级。
+- 验证：在任务 worktree 使用 Node24 执行 `npm run typecheck`、`npm test`、`npm run build`、`npm run test:e2e`；审查桌面/手机截图、键盘操作和服务边界 diff。
+- 完成条件：保留原业务及测试断言，四项命令通过，七页无溢出；验收结果与 PR 合并状态分别记录。
+- 完成证据：2026-09-19，Node24下四项指定命令均退出0，17项单元测试、13项浏览器测试通过；原业务断言保留，七页桌面/手机及320px无溢出，键盘与Portal样式通过验证。App由1698行缩减为219行；详见 [T014验证记录](verification/t014-radix-ui.md)。PR合并状态另行核对。
