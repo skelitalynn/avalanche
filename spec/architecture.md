@@ -8,11 +8,11 @@
 
 | 部分 | 已确认选择 / 实施边界 |
 | --- | --- |
-| 链与网络 | Avalanche C-Chain、USDC；开发验收使用 Fuji，网络参数见 [生态文档](ecosystem.md)，USDC 测试资产待确定 |
+| 链与网络 | Avalanche C-Chain、USDC；开发验收使用 Fuji，网络参数见 [生态文档](ecosystem.md)，USDC 测试资产已核对，见同一文档 |
 | 应用形式 | 中文、移动端优先 Web 单页 Demo，采用单应用结构；七类页面见 [001 Spec](features/001-situationship.md) |
 | 主要语言 | TypeScript，用于前端、应用逻辑、脚本与测试 |
 | 前端 | React + Vite |
-| 钱包 | Core Wallet；优先验证浏览器扩展，其他钱包及移动端兼容范围由功能 Spec 定义 |
+| 钱包 | Core Wallet；桌面通过 Core Extension 的 EIP-6963 provider，手机通过 WalletConnect；配置与验证边界见 [生态文档](ecosystem.md) |
 | 链交互 | wagmi + viem：wagmi 负责 React 中的钱包连接与链状态交互，viem 负责底层 RPC、合约调用和金额转换等 |
 | 单元与集成测试 | Vitest，覆盖业务规则和可模拟的钱包/RPC 分支 |
 | 页面流程测试 | Playwright，覆盖关键页面操作；真实 Core/Fuji 验收另外记录 |

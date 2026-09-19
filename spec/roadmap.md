@@ -41,9 +41,9 @@
 
 ### T002 定义首个核心功能与链上职责
 
-- 状态：TODO
-- 负责人：待认领。
-- 分支 / PR：认领时填写 / 未创建。
+- 状态：DOING
+- 负责人：skelitalynn；AI 助手执行 Spec 整理，业务规则由项目发起人确认。
+- 分支 / PR：`docs/002-ready-spec` / 待创建 Draft PR。
 - 依赖：T001、T009；产品场景已提供，仍需确定 Q1–Q7。
 - 对应 Spec：[001 Spec](features/001-situationship.md) 第 14 节、[项目范围](README.md)、[架构](architecture.md)、[接口](contracts.md)。
 - 已明确：基础技术选型由 T008 记录；本任务不重复选择前端、链交互及测试工具。
@@ -51,6 +51,8 @@
 - 验证：逐项走读正常、异常、边界场景，检查每项是否有可观察的预期结果；检查影响实现的待定项是否已解决。
 - 验收：首个功能 Spec 为 READY；技术选择明确；T003、T004 可直接执行。
 - 完成证据：尚未完成；T009 已整理产品范围，不代表本项的业务边界和技术路线已冻结。
+
+- 当前证据：2026-09-19，已发出争议/资金/隐私三组规则确认题，尚未收到业务答复。已核对 Circle 官方 Fuji USDC 地址、精度与 Core Mobile WalletConnect 接入；只读 RPC 三项通过，详见 [生态文档](ecosystem.md)。业务状态机和接口仍待用户确认后冻结，Spec 保持 DRAFT。
 
 ### T009 整理 SituationSHIT 项目文档
 
