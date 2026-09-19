@@ -1,0 +1,737 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SituationSHIT · 路演</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --paper: #f8f5ef;
+        --card: #fffdf8;
+        --ink: #292b27;
+        --muted: #777b70;
+        --green: #344f42;
+        --green-deep: #253b31;
+        --lime: #e7ecbd;
+        --peach: #e8b49f;
+        --line: #deded3;
+        --rose: #bd6b7d;
+      }
+
+      * { box-sizing: border-box; }
+
+      html, body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        background: #20231f;
+        color: var(--ink);
+        font-family: Inter, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+      }
+
+      button, a { font: inherit; }
+      button { cursor: pointer; }
+
+      .deck {
+        position: relative;
+        width: min(100vw, 177.7778vh);
+        height: min(100vh, 56.25vw);
+        aspect-ratio: 16 / 9;
+        overflow: hidden;
+        background: var(--paper);
+        container-type: size;
+      }
+
+      body { display: grid; place-items: center; }
+
+      .slide {
+        position: absolute;
+        inset: 0;
+        display: none;
+        padding: 7.2cqh 7.2cqw 6.5cqh;
+        overflow: hidden;
+        background: var(--paper);
+      }
+
+      .slide.active { display: block; }
+
+      .slide-number {
+        position: absolute;
+        right: 8.2cqw;
+        bottom: 2.8cqh;
+        color: #9b9d92;
+        font-size: 1.05cqw;
+        letter-spacing: .12em;
+      }
+
+      .brand {
+        position: absolute;
+        left: 3.6cqw;
+        top: 3cqh;
+        font-size: 1.35cqw;
+        font-weight: 850;
+        letter-spacing: -.06em;
+      }
+
+      .brand span { color: #819174; }
+
+      .kicker {
+        margin: 0 0 2.1cqh;
+        color: var(--green);
+        font-size: .9cqw;
+        font-weight: 650;
+        letter-spacing: .24em;
+        text-transform: uppercase;
+      }
+
+      h1, h2, h3, p { margin-top: 0; }
+
+      h1 {
+        margin-bottom: 2.7cqh;
+        font-size: 4.35cqw;
+        line-height: 1.12;
+        letter-spacing: -.055em;
+      }
+
+      h2 {
+        margin-bottom: 3.4cqh;
+        font-size: 3.15cqw;
+        line-height: 1.18;
+        letter-spacing: -.045em;
+      }
+
+      h3 {
+        margin-bottom: 1.1cqh;
+        font-size: 1.35cqw;
+        line-height: 1.35;
+      }
+
+      p {
+        margin-bottom: 1.5cqh;
+        color: var(--muted);
+        font-size: 1.33cqw;
+        line-height: 1.75;
+      }
+
+      .lead {
+        max-width: 42cqw;
+        color: #5f655d;
+        font-size: 1.55cqw;
+        line-height: 1.7;
+      }
+
+      .accent { color: #7d926c; }
+      .rose { color: var(--rose); }
+
+      .cover {
+        padding: 0;
+        background: var(--green);
+        color: white;
+      }
+
+      .cover .cover-copy {
+        width: 57%;
+        height: 100%;
+        padding: 13cqh 5.8cqw;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .cover h1 {
+        margin: 0 0 3.2cqh;
+        color: white;
+        font-size: 4.9cqw;
+      }
+
+      .cover p {
+        color: #e8ecdf;
+        font-size: 1.55cqw;
+      }
+
+      .cover .meta {
+        margin-top: 6cqh;
+        color: var(--lime);
+        font-size: 1.02cqw;
+        letter-spacing: .1em;
+      }
+
+      .cover-photo {
+        position: absolute;
+        inset: 0 0 0 57%;
+        width: 43%;
+        height: 100%;
+        object-fit: cover;
+        filter: saturate(.78) contrast(.96);
+      }
+
+      .cover::after {
+        content: "";
+        position: absolute;
+        inset: 0 39% 0 54%;
+        background: linear-gradient(90deg, var(--green), transparent);
+      }
+
+      .question-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2.2cqh 3cqw;
+        margin-top: 5.5cqh;
+      }
+
+      .question {
+        padding: 0 0 2.2cqh;
+        border-bottom: 1px solid var(--line);
+        color: var(--ink);
+        font-size: 1.75cqw;
+        font-weight: 650;
+        line-height: 1.42;
+      }
+
+      .plain-note {
+        margin-top: 5cqh;
+        max-width: 65cqw;
+        color: var(--green);
+        font-size: 1.45cqw;
+      }
+
+      .split {
+        display: grid;
+        grid-template-columns: .82fr 1.18fr;
+        gap: 4.5cqw;
+        align-items: center;
+        height: 100%;
+      }
+
+      .split.reverse { grid-template-columns: 1.14fr .86fr; }
+
+      .screen {
+        position: relative;
+        height: 68cqh;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 1.3cqw;
+        background: var(--card);
+        box-shadow: 0 2.4cqh 6cqh rgba(43, 54, 45, .12);
+      }
+
+      .screen img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: top center;
+      }
+
+      .screen.contain img { object-fit: contain; }
+
+      .statement {
+        margin: 5.5cqh 0 0;
+        padding-left: 1.5cqw;
+        border-left: .42cqw solid var(--lime);
+        color: var(--green);
+        font-size: 1.55cqw;
+        line-height: 1.6;
+      }
+
+      .steps {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        margin-top: 9cqh;
+        border-top: 2px solid var(--green);
+      }
+
+      .step {
+        position: relative;
+        padding: 4.5cqh 2cqw 0 0;
+      }
+
+      .step::before {
+        content: "";
+        position: absolute;
+        width: 1.2cqw;
+        height: 1.2cqw;
+        top: -.68cqw;
+        left: 0;
+        border-radius: 50%;
+        background: var(--green);
+        box-shadow: 0 0 0 .45cqw var(--lime);
+      }
+
+      .step .num {
+        display: block;
+        margin-bottom: 1.5cqh;
+        color: #7d926c;
+        font-size: 1cqw;
+        letter-spacing: .14em;
+      }
+
+      .step strong {
+        display: block;
+        margin-bottom: .9cqh;
+        font-size: 1.4cqw;
+      }
+
+      .step p { font-size: 1.02cqw; line-height: 1.55; }
+
+      .money-layout {
+        display: grid;
+        grid-template-columns: .85fr 1.15fr;
+        gap: 4.5cqw;
+        align-items: center;
+        height: 100%;
+      }
+
+      .money-pair {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2.5cqw;
+        margin: 5cqh 0 4cqh;
+      }
+
+      .money-pair strong {
+        display: block;
+        font-size: 4.5cqw;
+        line-height: 1;
+        color: var(--green);
+      }
+
+      .money-pair span {
+        display: block;
+        margin-top: 1.2cqh;
+        color: var(--muted);
+        font-size: 1.05cqw;
+      }
+
+      .privacy-list {
+        margin: 4cqh 0 0;
+        padding: 0;
+        list-style: none;
+        counter-reset: privacy;
+      }
+
+      .privacy-list li {
+        counter-increment: privacy;
+        display: grid;
+        grid-template-columns: 2.5cqw 1fr;
+        gap: 1.2cqw;
+        padding: 1.7cqh 0;
+        border-bottom: 1px solid var(--line);
+        color: var(--ink);
+        font-size: 1.28cqw;
+        line-height: 1.5;
+      }
+
+      .privacy-list li::before {
+        content: "0" counter(privacy);
+        color: #829174;
+        font-size: .9cqw;
+        letter-spacing: .08em;
+      }
+
+      .boundary {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6cqw;
+        margin-top: 5cqh;
+      }
+
+      .boundary > div { padding-top: 2.6cqh; border-top: .36cqw solid var(--green); }
+      .boundary > div:last-child { border-top-color: var(--peach); }
+
+      .boundary h3 {
+        margin-bottom: 2.5cqh;
+        font-size: 1.7cqw;
+      }
+
+      .boundary p {
+        margin-bottom: 1.3cqh;
+        color: var(--ink);
+        font-size: 1.2cqw;
+      }
+
+      .boundary small {
+        display: block;
+        margin-top: 3cqh;
+        color: var(--muted);
+        font-size: 1cqw;
+        line-height: 1.6;
+      }
+
+      .proof {
+        display: grid;
+        grid-template-columns: 1.15fr .85fr;
+        gap: 4.5cqw;
+        align-items: center;
+        height: 100%;
+      }
+
+      .proof .screen { height: 70cqh; }
+
+      .metrics {
+        display: grid;
+        gap: 3.2cqh;
+      }
+
+      .metric {
+        padding-bottom: 2.4cqh;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .metric strong {
+        display: inline-block;
+        min-width: 5.5cqw;
+        color: var(--green);
+        font-size: 3.1cqw;
+        line-height: 1;
+      }
+
+      .metric span { font-size: 1.15cqw; color: var(--ink); }
+
+      .status-line {
+        margin-top: 4cqh;
+        color: var(--rose);
+        font-size: 1.05cqw;
+        line-height: 1.65;
+      }
+
+      .next-layout {
+        display: grid;
+        grid-template-columns: .8fr 1.2fr;
+        gap: 7cqw;
+        align-items: center;
+        height: 100%;
+      }
+
+      .next-list { counter-reset: next; }
+
+      .next-item {
+        counter-increment: next;
+        display: grid;
+        grid-template-columns: 3.6cqw 1fr;
+        gap: 1.5cqw;
+        padding: 2.1cqh 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .next-item::before {
+        content: counter(next, decimal-leading-zero);
+        color: #819174;
+        font-size: 1cqw;
+        letter-spacing: .1em;
+      }
+
+      .next-item strong { font-size: 1.35cqw; }
+      .next-item p { margin: .5cqh 0 0; font-size: 1.05cqw; }
+
+      .demo-link {
+        display: inline-flex;
+        align-items: center;
+        gap: .8cqw;
+        margin-top: 4cqh;
+        padding: 1.4cqh 1.4cqw;
+        border: 1px solid var(--green);
+        border-radius: .7cqw;
+        background: var(--green);
+        color: white;
+        text-decoration: none;
+        font-size: 1.1cqw;
+        font-weight: 700;
+      }
+
+      .controls {
+        position: fixed;
+        right: 1.3rem;
+        bottom: 1.1rem;
+        z-index: 20;
+        display: flex;
+        gap: .45rem;
+        opacity: .14;
+        transition: opacity .18s ease;
+      }
+
+      .controls:hover,
+      .controls:focus-within { opacity: 1; }
+
+      .controls button {
+        width: 2.4rem;
+        height: 2.4rem;
+        border: 1px solid #ffffff42;
+        border-radius: 50%;
+        background: #253b31dd;
+        color: white;
+      }
+
+      .progress {
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        z-index: 30;
+        width: 0;
+        height: 4px;
+        background: var(--lime);
+        transition: width .2s ease;
+      }
+
+      .notes-panel {
+        position: fixed;
+        left: 50%;
+        bottom: 1rem;
+        z-index: 25;
+        display: none;
+        width: min(760px, 72vw);
+        max-height: 26vh;
+        overflow: auto;
+        transform: translateX(-50%);
+        padding: 1rem 1.2rem;
+        border: 1px solid #ffffff30;
+        border-radius: .8rem;
+        background: #1f2924f2;
+        color: #f4f0e9;
+        font-size: 1rem;
+        line-height: 1.65;
+        box-shadow: 0 1rem 3rem #0006;
+      }
+
+      .notes-panel.open { display: block; }
+      .notes { display: none; }
+
+      .help {
+        position: fixed;
+        left: 1rem;
+        bottom: 1rem;
+        z-index: 20;
+        color: #6670675c;
+        font-size: .72rem;
+      }
+
+      @media print {
+        html, body { width: auto; height: auto; overflow: visible; background: white; }
+        body { display: block; }
+        .deck { width: 100%; height: auto; overflow: visible; }
+        .slide {
+          position: relative;
+          display: block !important;
+          width: 100vw;
+          height: 56.25vw;
+          page-break-after: always;
+        }
+        .controls, .progress, .notes-panel, .help { display: none !important; }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        * { transition: none !important; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="deck" aria-live="polite">
+      <section class="slide cover active" data-title="封面">
+        <div class="cover-copy">
+          <p class="kicker">SituationSHIT</p>
+          <h1>把关系里的期待，<br />先说清楚</h1>
+          <p>给暧昧期的两个人，一份能共同签署、共同结束的约定。</p>
+          <div class="meta">AVALANCHE HACKATHON DEMO · 2026</div>
+        </div>
+        <img class="cover-photo" src="assets/together.jpg" alt="两个人的手在日落前合成心形" />
+        <aside class="notes">我们做的是一件很生活化的事。两个人还没决定关系叫什么，但已经开始在意回应、见面和承诺。SituationSHIT 让这些话在关系开始时就被说清楚。</aside>
+      </section>
+
+      <section class="slide" data-title="问题">
+        <div class="brand">Situation<span>SHIT</span></div>
+        <p class="kicker">问题</p>
+        <h2>很多争议，开始时只是没说清</h2>
+        <div class="question-grid">
+          <div class="question">多久不回消息，才算失联？</div>
+          <div class="question">约好每月见两次，谁来记？</div>
+          <div class="question">想结束时，存进去的钱怎么退？</div>
+          <div class="question">真有争议，谁有资格判断？</div>
+        </div>
+        <p class="plain-note">这些问题通常拖到关系出事后，才第一次被拿出来谈。</p>
+        <span class="slide-number">02 / 09</span>
+        <aside class="notes">暧昧关系的问题很少来自一条复杂规则。更常见的是双方对同一件事想得完全不同。产品先把这四个问题摆到桌面上，让双方给出明确答案。</aside>
+      </section>
+
+      <section class="slide" data-title="产品">
+        <div class="brand">Situation<span>SHIT</span></div>
+        <div class="split">
+          <div>
+            <p class="kicker">产品</p>
+            <h2>一份双方都签过的相处约定</h2>
+            <p class="lead">两个人写下回应期限和见面频率，确认资金，再邀请三位共同信任的好友。</p>
+            <p class="statement">每一步都要明确同意。任何一方都不能单方面改规则。</p>
+          </div>
+          <div class="screen">
+            <img src="assets/create.png" alt="SituationSHIT 创建关系页面" />
+          </div>
+        </div>
+        <span class="slide-number">03 / 09</span>
+        <aside class="notes">创建页没有晦涩的链上概念。用户先处理真实问题：多久回应、多久见面、各自愿意放多少钱。完整协议由双方确认，链上只保留需要公开验证的部分。</aside>
+      </section>
+
+      <section class="slide" data-title="建立关系流程">
+        <div class="brand">Situation<span>SHIT</span></div>
+        <p class="kicker">建立关系</p>
+        <h2>关系生效前，五件事缺一不可</h2>
+        <div class="steps">
+          <div class="step"><span class="num">01</span><strong>写约定</strong><p>规则、金额和好友名单一次确认。</p></div>
+          <div class="step"><span class="num">02</span><strong>双方签署</strong><p>A 创建，B 核对同一份协议。</p></div>
+          <div class="step"><span class="num">03</span><strong>好友接受</strong><p>三位监督人知道自己的责任。</p></div>
+          <div class="step"><span class="num">04</span><strong>各存 70</strong><p>50 恢复基金，20 承诺保证金。</p></div>
+          <div class="step"><span class="num">05</span><strong>关系生效</strong><p>日常记录和结束流程开始工作。</p></div>
+        </div>
+        <p class="plain-note">当前 React Mock 已经能完整演示这条流程。</p>
+        <span class="slide-number">04 / 09</span>
+        <aside class="notes">这里有两个刻意的设计。第一，好友要先接受监督职责，避免事后把不知情的人拉进来。第二，双方资金都到位后关系才生效，半途退出只退回实际存入的钱。</aside>
+      </section>
+
+      <section class="slide" data-title="资金规则">
+        <div class="brand">Situation<span>SHIT</span></div>
+        <div class="money-layout">
+          <div>
+            <p class="kicker">资金</p>
+            <h2>钱的规则很简单</h2>
+            <p>正常结束，双方各拿回 70 USDC。</p>
+            <div class="money-pair">
+              <div><strong>50</strong><span>A 违约后，A 收到</span></div>
+              <div><strong>90</strong><span>A 违约后，B 收到</span></div>
+            </div>
+            <p class="statement">恢复基金始终归本人。只有 20 USDC 保证金会因裁决发生转移。</p>
+          </div>
+          <div class="screen contain">
+            <img src="assets/settlement.png" alt="好友裁决后的 50 和 90 USDC 结算页面" />
+          </div>
+        </div>
+        <span class="slide-number">05 / 09</span>
+        <aside class="notes">我们没有设计复杂罚则。每个人的 50 USDC 恢复基金始终归自己。若两位好友认定一方失联违约，违约方的 20 USDC 保证金转给另一方，所以结果是 50 和 90。</aside>
+      </section>
+
+      <section class="slide" data-title="好友监督与隐私">
+        <div class="brand">Situation<span>SHIT</span></div>
+        <div class="split reverse">
+          <div class="screen">
+            <img src="assets/jury.png" alt="三位好友监督人的投票页面" />
+          </div>
+          <div>
+            <p class="kicker">监督与隐私</p>
+            <h2>三位好友，只处理这一件争议</h2>
+            <ol class="privacy-list">
+              <li>正式确认逾期后，参与者才能发起失联申诉</li>
+              <li>双方先有说明时间，材料随后冻结</li>
+              <li>好友看到本案必要事实和明确授权的材料</li>
+              <li>三人一人一票，两票决定结果</li>
+            </ol>
+            <p class="statement">好友看不到其他关系记录，也拿不到完整私密历史。</p>
+          </div>
+        </div>
+        <span class="slide-number">06 / 09</span>
+        <aside class="notes">好友监督不是随时围观。只有争议进入投票阶段，他们才获得本案的最小视图。链上记录谁有投票权和最终结果，私密原文仍由受控服务按案件授权。</aside>
+      </section>
+
+      <section class="slide" data-title="Avalanche 架构">
+        <div class="brand">Situation<span>SHIT</span></div>
+        <p class="kicker">Avalanche</p>
+        <h2>钱和裁决放链上，私密原文留在链下</h2>
+        <div class="boundary">
+          <div>
+            <h3>Fuji C-Chain</h3>
+            <p>协议摘要与双方签署</p>
+            <p>USDC 托管与关系状态</p>
+            <p>监督人投票与最终结算</p>
+            <small>Solidity + Hardhat<br />Core Wallet + wagmi + viem</small>
+          </div>
+          <div>
+            <h3>私有服务</h3>
+            <p>完整协议与日常记录</p>
+            <p>申诉说明和图片材料</p>
+            <p>按案件授权与到期删除</p>
+            <small>TypeScript + Fastify<br />SQLite + 加密附件目录</small>
+          </div>
+        </div>
+        <p class="plain-note">链上状态决定资金。后端无权改裁决，也不替用户签交易。</p>
+        <span class="slide-number">07 / 09</span>
+        <aside class="notes">Avalanche 在这里负责最适合公开验证的部分：签署、资金、状态和裁决。完整协议和证据原文不应该公开。后端只做私密数据和权限，链上结算不依赖服务器管理员。</aside>
+      </section>
+
+      <section class="slide" data-title="当前进度">
+        <div class="brand">Situation<span>SHIT</span></div>
+        <div class="proof">
+          <div class="screen">
+            <img src="assets/relationship.png" alt="SituationSHIT 关系主页" />
+          </div>
+          <div>
+            <p class="kicker">当前进度</p>
+            <h2>前台已经能跑完整演示</h2>
+            <div class="metrics">
+              <div class="metric"><strong>7</strong><span>个可直达页面</span></div>
+              <div class="metric"><strong>12</strong><span>项业务单元测试</span></div>
+              <div class="metric"><strong>8</strong><span>项浏览器流程验收</span></div>
+            </div>
+            <p class="status-line">当前版本使用本地 Mock。钱包、后端和智能合约仍待接入，尚未完成真实 Fuji 交易。</p>
+          </div>
+        </div>
+        <span class="slide-number">08 / 09</span>
+        <aside class="notes">现在可以现场跑完整产品故事：创建、签署、入金、日常关系、失联申诉、好友投票和结算。我们也把边界写得很清楚。今天展示的是可操作 Mock，不会把模拟结果说成链上完成。</aside>
+      </section>
+
+      <section class="slide" data-title="下一步与演示">
+        <div class="brand">Situation<span>SHIT</span></div>
+        <div class="next-layout">
+          <div>
+            <p class="kicker">下一步</p>
+            <h2>把模拟动作换成真实交易</h2>
+            <p class="lead">先完成 Fuji 上的一段真实关系，再做更多承诺类型。</p>
+            <a class="demo-link" href="http://localhost:5173/?present=1#/home" target="_blank" rel="noreferrer">打开现场演示　↗</a>
+          </div>
+          <div class="next-list">
+            <div class="next-item"><div><strong>接入 Core Wallet</strong><p>桌面扩展与手机 WalletConnect，先做网络和签名校验。</p></div></div>
+            <div class="next-item"><div><strong>部署关系合约</strong><p>Factory、单关系 Agreement、USDC 托管和结算。</p></div></div>
+            <div class="next-item"><div><strong>接上私有服务</strong><p>SIWE 登录、协议保存、日常记录和证据授权。</p></div></div>
+            <div class="next-item"><div><strong>完成真实验收</strong><p>在 Fuji 走完正常结束与失联裁决，核对回执和余额。</p></div></div>
+          </div>
+        </div>
+        <span class="slide-number">09 / 09</span>
+        <aside class="notes">下一步很具体。先把 Mock 的四类动作逐个换成真实能力，然后在 Fuji 跑完两条路径：正常结束，以及好友裁决后的 50 和 90。现在可以直接看产品演示。</aside>
+      </section>
+    </main>
+
+    <div class="help">← → 翻页　F 全屏　N 讲稿</div>
+    <div class="controls" aria-label="幻灯片控制">
+      <button id="prev" type="button" aria-label="上一页">‹</button>
+      <button id="next" type="button" aria-label="下一页">›</button>
+    </div>
+    <div class="progress" id="progress"></div>
+    <div class="notes-panel" id="notes-panel" aria-live="polite"></div>
+
+    <script>
+      const slides = [...document.querySelectorAll('.slide')];
+      const progress = document.querySelector('#progress');
+      const notesPanel = document.querySelector('#notes-panel');
+      let index = Math.max(0, Math.min(slides.length - 1, Number(location.hash.slice(1)) - 1 || 0));
+
+      function render(nextIndex, updateHash = true) {
+        index = Math.max(0, Math.min(slides.length - 1, nextIndex));
+        slides.forEach((slide, i) => slide.classList.toggle('active', i === index));
+        progress.style.width = `${((index + 1) / slides.length) * 100}%`;
+        notesPanel.textContent = slides[index].querySelector('.notes')?.textContent || '';
+        document.title = `${slides[index].dataset.title} · SituationSHIT 路演`;
+        if (updateHash) history.replaceState(null, '', `#${index + 1}`);
+      }
+
+      function move(delta) { render(index + delta); }
+      document.querySelector('#prev').addEventListener('click', () => move(-1));
+      document.querySelector('#next').addEventListener('click', () => move(1));
+      window.addEventListener('hashchange', () => render(Number(location.hash.slice(1)) - 1 || 0, false));
+      window.addEventListener('keydown', (event) => {
+        if (['ArrowRight', 'PageDown', ' '].includes(event.key)) { event.preventDefault(); move(1); }
+        if (['ArrowLeft', 'PageUp'].includes(event.key)) { event.preventDefault(); move(-1); }
+        if (event.key === 'Home') render(0);
+        if (event.key === 'End') render(slides.length - 1);
+        if (event.key.toLowerCase() === 'f') document.documentElement.requestFullscreen?.();
+        if (event.key.toLowerCase() === 'n') notesPanel.classList.toggle('open');
+      });
+      render(index, false);
+    </script>
+  </body>
+</html>
