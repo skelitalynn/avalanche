@@ -2,7 +2,7 @@
 
 基于 Avalanche 生态的小型黑客松 Demo，采用轻量 Spec 驱动开发。
 
-当前产品方向为 SituationSHIT：面向两个人的关系承诺、USDC 托管与好友争议判断产品，中文移动端优先。已整理[项目功能 Spec](spec/features/001-situationship.md)；T002 已确认业务规则并冻结状态机与接口，已提供可运行的 Mock 演示前台，后端、钱包和链上部署尚未接入。
+当前产品方向为 SituationSHIT：面向两个人的关系承诺、USDC 托管与好友争议判断产品，中文移动端优先。已整理[项目功能 Spec](spec/features/001-situationship.md)；T002 已冻结业务规则与接口；现提供 Mock 演示及真实本地 API、钱包签名和 EVM 合约流程。Fuji 尚未部署验收。
 
 技术方案：TypeScript + React + Vite，使用 Core Wallet、wagmi + viem 接入 Fuji C-Chain；测试采用 Vitest + Playwright。自定义合约采用 Solidity + Hardhat。后端采用 TypeScript + Fastify、SQLite 和私有附件存储；具体依赖版本在工程初始化时锁定，详见 [技术架构](spec/architecture.md)。
 
@@ -14,9 +14,22 @@
 
 开发顺序：明确功能 Spec → 拆分任务 → 实现 → 测试与验收 → 更新进度。
 
+## 在自己的电脑运行完整流程
+
+使用 **Node 24.13+（Node 24）**，仓库根目录执行：
+
+```bash
+npm ci
+npm run mvp:local
+```
+
+出现 `Local MVP ready` 后打开 <http://127.0.0.1:5174/>。前台、API、SQLite 和测试链全部在本机运行，不依赖云服务器。页面内置五个本地开发钱包，选择角色并签名登录即可；创建时预填其他四个地址。完整操作见 [本地运行指南](docs/local-mvp.md)。
+
+**Ctrl+C停止服务；重启开始新的本地链和数据库。** 同次运行刷新不丢业务数据；旧数据目录保留但不作为链快照恢复。仅使用本地测试资产，未进行 Fuji/Core 真机验收。
+
 ## 运行前台演示
 
-推荐 Node 24（`.nvmrc`），最低 Node 22.12。仓库根目录执行：
+使用 Node 24.13+（`.nvmrc`）。仓库根目录执行：
 
 ```bash
 npm ci
@@ -40,4 +53,4 @@ npm run screenshots
 
 只演示生产版本：执行 `npm run build`，再执行 `npm run preview`，同样使用 5173 端口；不要同时启动 dev 与 preview。
 
-云服务器演示的 Nginx 入口、运行状态和维护步骤见 [Nginx 部署说明](docs/nginx-demo.md)。
+原云服务器 Mock 的历史说明见 [Nginx 部署说明](docs/nginx-demo.md)；本地运行不需要这些配置。

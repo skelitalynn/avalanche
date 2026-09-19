@@ -14,7 +14,7 @@
 | 基础技术栈 | 已确认 TypeScript + React + Vite；Core Wallet；wagmi + viem；Vitest + Playwright，详见 [架构](architecture.md) |
 | 自定义合约 | 需要，使用 Solidity + Hardhat；Factory + 每关系一个 Agreement，Vault/Dispute 为内部模块 |
 | 后端与数据库 | TypeScript + Fastify、SQLite、私有加密附件目录 |
-| 当前范围 | 001 MVP 已 READY；002 提供独立 Mock 演示前台，真实后端与链上实现待完成 |
+| 当前范围 | 001 MVP 已 READY；002 提供独立 Mock 演示前台，T013 提供真实本地API/合约/钱包路径，Fuji与完整验收待完成 |
 
 暂不规划主网发布、自建 L1、多链互操作等扩展；如核心场景需要，在对应 Spec 中明确后再加入。
 

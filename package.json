@@ -4,10 +4,12 @@
   "version": "0.1.0",
   "type": "module",
   "workspaces": [
-    "apps/web"
+    "apps/web",
+    "apps/api",
+    "packages/shared"
   ],
   "engines": {
-    "node": ">=22.12.0"
+    "node": ">=24.13.0"
   },
   "scripts": {
     "dev": "npm run dev -w @situationshit/web -- --host 0.0.0.0",
@@ -16,9 +18,31 @@
     "test": "npm run test -w @situationshit/web",
     "test:e2e": "playwright test",
     "screenshots": "playwright test tests/screenshots.spec.ts",
-    "preview": "npm run preview -w @situationshit/web"
+    "preview": "npm run preview -w @situationshit/web",
+    "contracts:build": "hardhat compile && node scripts/export-abi.mjs",
+    "chain:local": "hardhat node --network local --hostname 127.0.0.1 > /dev/null",
+    "api:dev": "tsx apps/api/src/server.ts",
+    "test:core": "node --import tsx --test --test-concurrency=1 contracts/test/core.test.ts",
+    "deploy:local": "tsx scripts/deploy.ts --local",
+    "deploy:fuji": "tsx scripts/deploy.ts --fuji",
+    "typecheck:core": "tsc -p tsconfig.core.json --noEmit",
+    "mvp:local": "npm run contracts:build && npm run build:local && tsx scripts/local.ts",
+    "test:live": "tsx scripts/smoke-live.ts",
+    "build:local": "node scripts/build-local.mjs",
+    "test:local": "node --test scripts/local.test.mjs"
   },
   "devDependencies": {
-    "@playwright/test": "^1.63.0"
+    "@playwright/test": "^1.63.0",
+    "@types/node": "^26.6.2",
+    "hardhat": "^3.17.0",
+    "prettier": "^3.9.8",
+    "prettier-plugin-solidity": "^2.4.1",
+    "tsx": "^4.23.13",
+    "typescript": "^7.0.2"
+  },
+  "dependencies": {
+    "canonicalize": "^5.1.0",
+    "viem": "^2.56.8",
+    "zod": "^3.25.76"
   }
 }

@@ -141,14 +141,14 @@ nonce 至少 16 字节随机，10 分钟有效；消息内容由服务端生成�
 | 路由 | 输入 | 权限 / 前置条件 | 输出及副作用 | AC |
 | --- | --- | --- | --- | --- |
 | GET `/health` | 无 | 公开，不暴露配置值 | `{status:"ok"}` 或 503 | AC-001-30 |
-| GET `/config` | 无 | 公开，仅已部署白名单 | `{chainId,tokenAddress,tokenDecimals,factoryAddress:null或地址,walletConnectConfigured:boolean}` | AC-001-32 |
+| GET `/config` | 无 | 公开，仅已部署白名单 | `{chainId,tokenAddress,tokenDecimals,factoryAddress:null或地址,walletConnectConfigured:boolean,localSessionId?:string}` | AC-001-32 |
 | POST `/auth/challenge` | `{address}` | Origin 校验，限速 | `{message,expiresAt}` + 一次性浏览器 challenge Cookie | AC-001-28 |
 | POST `/auth/verify` | `{message,signature}` | 同 browser challenge，签名/域/链/时效/nonce全部匹配 | `{address,expiresAt}` + Session Cookie；consume nonce | AC-001-28 |
 | DELETE `/auth/session` | 无 | 同源；幂等 | 清理会话与 Cookie | AC-001-28 |
 | POST `/agreements` | `{document:AgreementDocument}` | 会话=A，五地址/参数有效；首次签署前准备 | `{id,agreementHash}`；加密保存，修改时创建新版本/新摘要 | AC-001-01、13、14、17 |
 | POST `/agreements/:id/link` | `{txHash}` | A；该交易成功回执来自登记 Factory，创建A/摘要/公开字段相符 | `{situationAddress,invitationPath}`；唯一绑定链上关系，不信任客户端自行声称的地址 | AC-001-01、29、30 |
 | GET `/agreements/:id` | 无 | A，或链上绑定完成后的指定 B | `{document,agreementHash,situationAddress}`；用户端再重算 | AC-001-01、14、29 |
-| GET `/situations` | 可选 `cursor` | 当前钱包 | `{items:[{address,role,state}],nextCursor}`；只枚举本人参与/受邀监督关系，不含隐私正文 | AC-001-10、30 |
+| GET `/situations` | 可选 `cursor` | 当前钱包 | `{items:[{address,role,state,agreementId}],nextCursor}`；只枚举本人参与/受邀监督关系，不含隐私正文；agreementId为A/B的协议UUID，监督人固定null | AC-001-10、30 |
 | GET `/situations/:s` | 无 | A/B | `{chain:SituationView,commitment,meetingCount,relationshipConfirmedAt,nextConfirmationAt,observedBlock}` | AC-001-03、12 |
 | GET `/situations/:s/supervision-invitation` | 无 | 受邀监督人 | `{participantA,participantB,supervisors,ghostWindow,recoveryAmount,bondAmount,agreementHash,rolePolicyVersion:1,acceptanceState}`；仅公开字段与职责摘要 | AC-001-13 |
 | POST `/situations/:s/meetings` | `{date:"YYYY-MM-DD"}` | A/B，ACTIVE，日期合法 | Meeting；不立即计数 | AC-001-03、25 |
@@ -173,11 +173,12 @@ nonce 至少 16 字节随机，10 分钟有效；消息内容由服务端生成�
 
 ## 7. 实现与部署记录
 
-实际 ABI 由 T005 编译生成并供前后端共享，不手写另一套不一致 ABI；共享 schema 与枚举在 T003 建立。当前没有部署地址、代码生成产物或已运行应用接口。
+实际 ABI 由 T005 编译生成并供前后端共享，不手写另一套不一致 ABI；共享 schema 与枚举在 T003 建立。T013 已整合HTTP实现及编译生成的ABI；每次本机启动生成独立部署记录，尚无Fuji部署。
 
 | 网络 / Chain ID | 合约名称 / 地址 | ABI 路径 | 部署交易 / 代码版本 |
 | --- | --- | --- | --- |
-| 尚未部署 | SituationFactory / SituationAgreement | T005 编译后填写真实路径 | T006 授权部署后记录 |
+| 本地 / 31337 | 每次启动生成Factory，关系按需创建 | packages/shared/src/abi.ts | .local/current.json 指向本轮deployment.json |
+| Fuji / 43113 尚未部署 | SituationFactory / SituationAgreement | packages/shared/src/abi.ts | T006 授权部署后记录 |
 
 T002 仅冻结上述定义；T003–T006 分别记录实现与应用验收。破坏性接口调整必须改 policyVersion/相关 Spec 并重新部署对应合约，不能对既有已签关系悄悄修改行为。
 
@@ -187,3 +188,14 @@ T002 仅冻结上述定义；T003–T006 分别记录实现与应用验收。破
 此层是客户端视图契约，不替代上文真实 HTTP/合约接口：`apps/web/src/data/types.ts` 定义 `DemoState`、`DemoAction`、`SituationService`。`getSnapshot()` 返回稳定引用，`subscribe()` 订阅更新，`dispatch(action)` 异步执行并在校验成功后更新快照；失败抛出用户可见错误，不提前产生成功状态。`src/data/service.ts` 选择当前 Mock 实现，视图不得直接导入 fixture。
 
 本机角色、固定时钟、预设场景、模拟入金/投票均非身份或资金凭证。后续接入真实服务须分别映射私有 HTTP 数据和链上权威状态，并为 `INVITED/FUNDING/ACTIVE/ENDING/DISPUTED/SETTLING/ENDED/CANCELLED`、签名拒绝、交易 pending/revert、部分付款失败增加视图行为。演示中的 `appeal/voting` 为展示用争议子阶段；演示结算直接生成结果，不模拟真实交易已确认。未实现的过期取消、双边争议和解、证据授权/上传不得被当作本适配层的已完成功能。
+
+
+## T013 本地实现记录
+
+- API实现：`apps/api/src/app.ts`；真实界面：`apps/web/src/live/LiveApp.tsx`；HTTP客户端：`live/api.ts`。沿用 `/api/v1`、Session Cookie、Origin校验与Idempotency-Key；钱包写入通过本地RPC和合约回执确认。
+- 共享协议与编译ABI：`packages/shared/src/index.ts`、`abi.ts`（由 `contracts:build` 生成，不手写）；Solidity来源 `contracts/src/`。本地31337/TestUSDC用于集成，Fuji官方测试资产规则不变。
+- 部署与私有数据：`.local/current.json` 指向本轮运行目录；目录中的deployment.json记录链、代币、Factory，数据库/加密密钥不进入前台配置或仓库。
+- 附件存储实现采用SQLite加密字段而非独立文件目录；GET content路由仍每次鉴权，正文没有公开URL。该变化不改对外字段。
+- 本地钱包为开发工具，仅在显式本地构建+回环站点提供，且请求前校验31337与账户；不是Core真机连接证明。接口基线的完整边界验收尚未完成，不将T013视为原32项全部通过。
+
+本机启动的config附带随机 `localSessionId`，不含目录或密钥。客户端只在31337模式下用它隔离不同启动轮次的待确认交易；同一轮刷新保留哈希，新一轮清掉旧本地链的哈希，Fuji记录不受此逻辑清理。
