@@ -9,9 +9,11 @@
 | 项目规模 | 小型黑客松 Demo |
 | 产品方向、目标用户 | 待确定 |
 | 核心使用流程 | 待确定：用户输入 → 核心操作 → 可观察结果 |
-| 开发网络 | 建议使用 Fuji C-Chain；在 T002 确定 |
-| 技术栈、是否需要自定义合约 | 待确定 |
-| 当前范围 | Spec 与开发任务框架 |
+| 开发网络 | 已确认 Fuji C-Chain，Chain ID `43113` |
+| 基础技术栈 | 已确认 TypeScript + React + Vite；Core Wallet；wagmi + viem；Vitest + Playwright，详见 [架构](architecture.md) |
+| 自定义合约 | 是否需要待定；需要时使用 Solidity + Hardhat |
+| 后端与数据库 | 是否需要及选型待业务明确后确定 |
+| 当前范围 | Spec、协作与开发任务框架，基础技术选型已确认，尚未初始化工程 |
 
 暂不规划主网发布、自建 L1、多链互操作等扩展；如核心场景需要，在对应 Spec 中明确后再加入。
 
