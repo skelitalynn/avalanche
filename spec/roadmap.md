@@ -43,7 +43,7 @@
 
 - 状态：DOING
 - 负责人：skelitalynn；AI 助手执行 Spec 整理，业务规则由项目发起人确认。
-- 分支 / PR：`docs/002-ready-spec` / 待创建 Draft PR。
+- 分支 / PR：`docs/002-ready-spec` / [Draft PR #4](https://github.com/skelitalynn/avalanche/pull/4)，业务规则确认中，尚未合并。
 - 依赖：T001、T009；产品场景已提供，仍需确定 Q1–Q7。
 - 对应 Spec：[001 Spec](features/001-situationship.md) 第 14 节、[项目范围](README.md)、[架构](architecture.md)、[接口](contracts.md)。
 - 已明确：基础技术选型由 T008 记录；本任务不重复选择前端、链交互及测试工具。
