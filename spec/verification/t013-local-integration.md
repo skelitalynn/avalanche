@@ -1,6 +1,6 @@
 # T013 本地真实后台接入验证
 
-日期：2026-09-19。工作目录 `/tmp/avalanche-local-integration`，分支 `feat/001-local-integration`，基线 `bc404a2`。执行者为本任务AI助手自检，不是独立队友评审；最终提交与合并状态以T013关联PR为准。
+日期：2026-09-19。工作目录 `/tmp/avalanche-local-integration`，分支 `feat/001-local-integration`，基线 `bc404a2`。执行者为本任务AI助手自检，不是独立队友评审；实现提交 `a01f5bb`，最终合并状态见 [PR #8](https://github.com/skelitalynn/avalanche/pull/8)。
 
 ## 实际交付
 

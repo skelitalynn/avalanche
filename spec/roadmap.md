@@ -296,7 +296,7 @@
 
 - 状态：DONE
 - 负责人：skelitalynn；AI 助手整合、验证。
-- 分支 / PR：`feat/001-local-integration` / 待创建。
+- 分支 / PR：`feat/001-local-integration` / [PR #8](https://github.com/skelitalynn/avalanche/pull/8)（合并状态以GitHub为准）。
 - 依赖：T002、T010、T012；用户授权使用现有本地 MVP 实现。
 - 对应 Spec：[001](features/001-situationship.md) 第16节、AC-001-33 至36；原有核心流程 AC-001-01/02/04/08/28/30。
 - 实施：隔离复制后端/合约/钱包实现，保留最新绿色前台；补齐本机启动、失败清理、钱包接入、无云依赖文档，核对接口与权限。
