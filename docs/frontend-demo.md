@@ -2,6 +2,8 @@
 
 本次交付对应 [002 Spec](../spec/features/002-demo-frontend.md) / T010。七个中文页面、异步 Mock、角色与时间控制已可运行；未接入后端、钱包、合约或真实资金。
 
+当前 React 前台已按仓库根目录 `avalanche-demo.html` 统一视觉：米白背景、墨绿操作色、青柠状态提示、顶部品牌栏、横向关系步骤和抽象双人主视觉。原型只作为视觉与交互基准；七个直达页面、异步 Mock service、持久化、演示控制和验收流程继续由 React 应用实现。
+
 ## 启动与截图
 
 推荐 Node 24，最低 22.12；根目录 `npm ci` 后运行 `npm run dev`，打开 <http://localhost:5173>。正式演示建议先 `npm run build`，再 `npm run preview`，减少开发服务器资源占用。两者不能同时占用 5173。
@@ -61,10 +63,12 @@ MVP 的真实 SIWE、Core、USDC 托管、隐私权限、附件和 Fuji 流程�
 | 人工视觉检查 | AC-002-06/08 | 首页、关系主页、创建、邀请、监督、结算的桌面/手机图已查看；中文无缺字，关键内容无裁切；投票弹窗有初始焦点、Tab 循环与 Escape 关闭 |
 | `git diff --check`、本地文档链接 | 文档规则 | 退出 0；13 份 Markdown、80 个本地文件链接有效 |
 
+T012 视觉适配复验：2026-09-19，在 `feat/002-green-prototype-ui` 执行 `npm run typecheck`、`npm test`、`npm run build`、`npm run test:e2e`，分别通过类型检查、12 项 Vitest、生产构建和 8 项 Playwright。重新导出 21 张 PNG，人工查看桌面/手机首页、创建、关系主页与结算页；确认米白、墨绿、青柠视觉、顶部品牌栏、横向步骤、抽象双人主视觉和业务页面风格一致，390×844 无横向溢出。首次 Playwright 启动因当前版本 Chromium 缺失而失败，安装对应浏览器后未修改断言即全部通过。
+
 首次构建因未使用的 `Role` 类型导入失败，移除后通过。浏览器前两轮在开发服务器约 0.5 GB 内存占用、同机其他服务环境下出现 Chromium 启动/加载超时；第二轮停止开发服务器期间又产生连接拒绝，均未记作通过。原始错误与 trace 保存在本机 `artifacts/verification/first-browser-run`、`second-browser-run`，日志 `browser-rerun.log`；改为生产预览、单 worker、隔离测试 DBus 与关闭 GPU 后 8 项原断言通过（25.4 秒），没有改成模拟浏览器或降低业务断言。最新检查日志与截图不提交到 Git，可按命令复现。
 
 本机浏览器为 Playwright 下载的 Chromium；非真实手机、真实钱包或真实 Fuji 验收。无 CI 通过或独立队友评审的声明。
 
 ## 资源
 
-首页照片来源：[Unsplash 图片资源](https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2)，下载为 `apps/web/public/assets/together.jpg`；不是用户关系照片。图标使用 `@phosphor-icons/react`（MIT）。字体使用系统中文字体，没有运行时外链字体/图片请求。
+首页主视觉使用 CSS 绘制的抽象双人图形，不加载外部图片。图标使用 `@phosphor-icons/react`（MIT）。字体使用系统中文字体，没有运行时外链字体/图片请求。
