@@ -1,22 +1,32 @@
 # 技术架构
 
-状态：草案。下列内容用于指导选型，不代表代码已经实现。
+状态：基础技术选型已确认（2026-09-19）。SituationSHIT 产品范围已整理，业务实现边界、依赖具体版本与应用实现尚未完成。
+
+确认来源：项目负责人在本次需求沟通中认可 TypeScript、React + Vite、Core Wallet、Fuji C-Chain、wagmi + viem、Vitest + Playwright，以及按需使用 Solidity + Hardhat 的方案。
 
 ## 技术选择
 
-| 部分 | 当前建议 / 待定事项 |
+| 部分 | 已确认选择 / 实施边界 |
 | --- | --- |
-| 链与网络 | Avalanche C-Chain、USDC；开发验收建议 Fuji，目标网络和资产在 T002 明确，参数见 [生态文档](ecosystem.md) |
-| 应用形式 | 中文、移动端优先的 Web 前台，七类页面见 [001 Spec](features/001-situationship.md) |
-| 语言、UI 框架、运行时 | T002 确定，并记录实际版本 |
-| 钱包 | 若需要用户签名，优先验证 Core；兼容范围由功能 Spec 定义 |
-| 链交互库 | 按所需 API 选择；候选与官方入口见生态文档 |
-| 自定义智能合约 | 需要：协议、托管、投票及结算；按 Solidity 任务拆分，编译器版本与测试工具待定 |
-| 后端、数据库、索引服务 | 按核心流程需要引入，当前未选定 |
+| 链与网络 | Avalanche C-Chain、USDC；开发验收使用 Fuji，网络参数见 [生态文档](ecosystem.md)，USDC 测试资产待确定 |
+| 应用形式 | 中文、移动端优先 Web 单页 Demo，采用单应用结构；七类页面见 [001 Spec](features/001-situationship.md) |
+| 主要语言 | TypeScript，用于前端、应用逻辑、脚本与测试 |
+| 前端 | React + Vite |
+| 钱包 | Core Wallet；优先验证浏览器扩展，其他钱包及移动端兼容范围由功能 Spec 定义 |
+| 链交互 | wagmi + viem：wagmi 负责 React 中的钱包连接与链状态交互，viem 负责底层 RPC、合约调用和金额转换等 |
+| 单元与集成测试 | Vitest，覆盖业务规则和可模拟的钱包/RPC 分支 |
+| 页面流程测试 | Playwright，覆盖关键页面操作；真实 Core/Fuji 验收另外记录 |
+| 自定义智能合约 | 需要，使用 Solidity + Hardhat 开发、测试和部署；负责协议、托管、投票和结算 |
+| 后端、数据库、索引服务 | 是否需要及具体选型仍待业务确定，不作为基础工程的必需组件 |
+| 开发运行时、包管理器与依赖版本 | T003 初始化时核对工具兼容要求，记录版本并提交锁文件 |
 
-## 建议模块边界
+普通 C-Chain 交互统一使用 wagmi + viem；AvalancheJS 和 Avalanche Client SDK 暂不引入，需要其特有 API 时再更新本文件。Avalanche CLI、HyperSDK 和自建 L1 不在本次基础方案内。
 
-SituationSHIT 的模块职责如下；具体框架、链下服务和部署结构在 T002 确定。
+官方入口：[Vite](https://vite.dev/guide/)、[wagmi](https://wagmi.sh/react/getting-started)、[viem](https://viem.sh/)、[Vitest](https://vitest.dev/guide/)、[Playwright](https://playwright.dev/docs/intro)、[Hardhat](https://hardhat.org/docs/getting-started)。
+
+## 模块边界
+
+SituationSHIT 按以下 Web + C-Chain 边界组织；基础技术已确认，链下服务与部署结构在 T002 明确。
 
 ```text
 用户界面 → 业务逻辑 → 链访问模块 → Avalanche C-Chain RPC
@@ -27,6 +37,7 @@ SituationSHIT 的模块职责如下；具体框架、链下服务和部署结构
 - 用户界面：收集输入，展示状态、错误和结果。
 - 业务逻辑：执行输入校验和功能规则，不散落在 UI 事件中。
 - 链访问模块：集中维护网络配置、读取、交易提交及回执查询。
+- 钱包连接与签名：通过 Core Wallet 完成；应用不接收用户私钥或助记词。
 - 智能合约：负责协议签署校验、USDC 托管、关系和争议状态、好友投票和资金结算；接口记入 contracts.md。
 - 链下数据与权限：负责邀请访问及必要的敏感证据存储、用户主动授权和争议范围内读取校验；是否采用独立后端、具体存储与认证方式待定。
 
@@ -52,10 +63,18 @@ SituationSHIT 的模块职责如下；具体框架、链下服务和部署结构
 ## 配置与运行
 
 - 网络参数集中配置；使用测试网时，在签名前检查目标 Chain ID。
-- 项目初始化时提供环境变量示例、锁文件和可复制的安装/启动/构建/测试命令。
+- 项目初始化时核对并锁定兼容的依赖组合，提供环境变量示例、锁文件和可复制的安装/启动/构建/类型检查/测试命令；相关配套依赖以实际所选版本要求为准。
 - 钱包私钥与助记词不进入前端配置、仓库或验收记录。
 - 如部署合约，在 contracts.md 记录网络、地址、ABI 位置及部署交易。
 
 ## 验证方式
 
-业务规则用单元测试验证；钱包和 RPC 分支可用模拟测试覆盖；真实 Fuji 验收记录网络、交易回执或实际读取结果。具体测试场景写在功能 Spec，执行结果写在 Roadmap。
+业务规则使用 Vitest 验证，钱包和 RPC 异常分支可使用模拟测试；关键页面流程使用 Playwright。自定义合约使用 Hardhat 验证权限、状态变更和回滚条件。真实 Core/Fuji 验收记录网络、交易回执或实际读取结果，不能用模拟 Provider 的通过结果代替。具体测试场景写在功能 Spec，执行结果写在 Roadmap。
+
+## 尚待业务明确
+
+- 产品范围与验收基线见 [001 Spec](features/001-situationship.md)；申诉、入金、时间、身份等边界仍待明确。
+- 自定义合约需求已明确；字段的链上/链下表示、完整状态机与部署结构待补齐。
+- 是否需要后端、数据库或索引服务，以及相应接口与权限。
+
+上述事项由 T002 处理。技术选型已确认不代表首个功能 Spec 已达到 READY，也不代表工程已经初始化。

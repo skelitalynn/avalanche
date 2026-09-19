@@ -2,7 +2,9 @@
 
 基于 Avalanche 生态的小型黑客松 Demo，采用轻量 Spec 驱动开发。
 
-当前产品方向为 SituationSHIT：面向两个人的关系承诺、USDC 托管与好友争议判断产品，中文移动端优先。已整理[项目功能 Spec](spec/features/001-situationship.md)；业务边界与技术栈仍有待定项，应用代码、启动命令和链上部署尚未提供。
+当前产品方向为 SituationSHIT：面向两个人的关系承诺、USDC 托管与好友争议判断产品，中文移动端优先。已整理[项目功能 Spec](spec/features/001-situationship.md)；业务边界仍有待定项，应用代码、启动命令和链上部署尚未提供。
+
+技术方案：TypeScript + React + Vite，使用 Core Wallet、wagmi + viem 接入 Fuji C-Chain；测试采用 Vitest + Playwright。自定义合约采用 Solidity + Hardhat。后端、数据库与具体依赖版本尚未确定，详见 [技术架构](spec/architecture.md)。
 
 - [Spec 入口](spec/README.md)：项目范围与文档导航。
 - [开发 Roadmap](spec/roadmap.md)：任务、依赖、测试、验收与完成证据。

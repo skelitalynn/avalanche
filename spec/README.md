@@ -9,10 +9,12 @@
 | 项目规模 | 小型黑客松 Demo |
 | 产品方向、目标用户 | SituationSHIT；暧昧期、dating 阶段及尚未明确关系定义的两个人 |
 | 核心使用流程 | 创建并双签协议 → 各存恢复基金与保证金 → 正常结束各自退款，或正式确认、失联申诉、好友投票后结算 |
-| 链与资产 | Avalanche C-Chain、USDC；开发验收建议 Fuji，具体资产与网络在 T002 确定 |
-| 应用形式、技术栈 | 中文移动端 Web；框架、钱包、后端与测试工具待定 |
-| 自定义合约 | 需要；Factory、Agreement、Vault、DisputeResolution 的部署结构待定 |
-| 当前范围 | MVP 需求文档与任务拆分；尚未实现 |
+| 链与资产 | Avalanche C-Chain、USDC；开发验收使用已确认的 Fuji，测试资产在 T002 确定；网络参数见 [生态文档](ecosystem.md) |
+| 应用形式 | 中文移动端优先 Web 单页应用 |
+| 基础技术栈 | 已确认 TypeScript + React + Vite；Core Wallet；wagmi + viem；Vitest + Playwright，详见 [架构](architecture.md) |
+| 自定义合约 | 需要，使用 Solidity + Hardhat；Factory、Agreement、Vault、DisputeResolution 的部署结构待定 |
+| 后端与数据库 | 是否需要及具体选型由隐私与业务接口要求确定 |
+| 当前范围 | MVP 需求文档与任务拆分，基础选型已确认；尚未初始化工程 |
 
 暂不规划主网发布、自建 L1、多链互操作等扩展；如核心场景需要，在对应 Spec 中明确后再加入。
 
@@ -36,7 +38,7 @@ spec/
 
 | 编号 | 功能 | Spec 状态 | 任务 |
 | --- | --- | --- | --- |
-| 001 | [SituationSHIT 关系承诺 MVP](features/001-situationship.md) | DRAFT：范围已明确，争议、入金和技术边界待补齐 | T002、T005-1 至 T005-8、T006、T008 |
+| 001 | [SituationSHIT 关系承诺 MVP](features/001-situationship.md) | DRAFT：范围已明确，争议、入金和技术边界待补齐 | T002、T005-1 至 T005-8、T006、T009 |
 
 首版排除 AI Agent、DeFi 收益、eERC 隐私金额、线下商户消费及更多 commitment 类型。新增功能使用下一个空闲编号，复制 [模板](features/_template.md)，并在此处加入链接。
 
