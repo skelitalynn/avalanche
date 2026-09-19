@@ -28,7 +28,7 @@ await app.listen({
   host: "127.0.0.1",
   port: Number(process.env.API_PORT ?? 3001),
 });
-console.log("SituationSHIT API listening on loopback:3001");
+console.log(`SituationSHIT API listening on loopback:${process.env.API_PORT ?? 3001}`);
 for (const signal of ["SIGTERM", "SIGINT"] as const)
   process.once(signal, async () => {
     await app.close();

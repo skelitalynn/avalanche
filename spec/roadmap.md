@@ -444,3 +444,17 @@ T018阻塞：当前GitHub凭据缺 `workflow` scope，远程拒绝新增工作�
 - 实施：核对官方链和代币；部署Factory并保存回执；提供mvp:fuji、独立本机数据和Core连接配置。
 - 验证：用户明确要求不运行CI测试；仅构建、启动健康与部署回执核对。真实钱包/资金流程由实际操作记录。
 - 当前证据：Fuji Factory实际部署成功，区块58481369，清单 `deployments/fuji.json`；部署输入与已编译字节码及官方USDC构造参数一致，回执success。`mvp:fuji`构建并启动，health/config均200且返回43113及上述Factory。未运行CI/回归测试；Core真机交易及手机projectId仍待实际配置。
+
+
+### T025 当前服务器 Fuji HTTPS 演示入口
+
+- 状态：DONE
+- 负责人：skelitalynn；AI助手实施、自检。
+- 分支：`feat/001-server-fuji`；PR待创建。
+- 依赖：T019现有Fuji部署；服务器现有Cloudflare程序。
+- Spec：001第19节，AC-001-45/46。
+- 实施：独立静态站点/API/systemd、持久数据、临时HTTPS、部署及停止指南。
+- 验证：仅必要构建、Nginx配置检查、实际HTTP/鉴权/重启检查；按用户要求不运行CI或回归套件。
+- 完成条件：公网真实入口及权限检查通过；记录MetaMask手工业务验收、手机配置和临时地址限制。
+
+- 完成证据：公网200、真实SIWE登录、401/403权限边界及持久会话重启恢复通过，见[服务器部署记录](../docs/server-fuji.md)。临时HTTPS不等于固定生产域名，真实Fuji资金闭环未验收。

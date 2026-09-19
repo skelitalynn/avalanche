@@ -1,0 +1,21 @@
+[Unit]
+Description=SituationSHIT Fuji API
+After=network-online.target
+Wants=network-online.target
+[Service]
+Type=simple
+User=situationshit
+Group=situationshit
+WorkingDirectory=/opt/situationshit-fuji/current
+EnvironmentFile=/etc/situationshit-fuji/api.env
+ExecStart=/opt/situationshit-fuji/node --import tsx apps/api/src/server.ts
+Restart=on-failure
+RestartSec=3
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/situationshit-fuji
+[Install]
+WantedBy=multi-user.target

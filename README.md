@@ -59,3 +59,5 @@ npm run screenshots
 只演示生产版本：执行 `npm run build`，再执行 `npm run preview`，同样使用 5173 端口；不要同时启动 dev 与 preview。
 
 原云服务器 Mock 的历史说明见 [Nginx 部署说明](docs/nginx-demo.md)；本地运行不需要这些配置。
+
+当前服务器的真实Fuji演示入口、服务维护与临时URL限制见[服务器部署记录](docs/server-fuji.md)。

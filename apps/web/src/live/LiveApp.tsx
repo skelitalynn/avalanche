@@ -145,7 +145,7 @@ function LiveView() {
               手机 WalletConnect 尚未配置；桌面可使用 Core 扩展。
               {localWalletEnabled && settings?.chainId === 31337
                 ? "本机体验也可选择本地开发钱包；仅操作测试代币。"
-                : "未安装钱包时，请先安装 Core。"}
+                : "支持 MetaMask 或 Core 浏览器扩展。"}
             </p>
           )}
           {devAccounts.length === 5 && <DeveloperWallets c={c} />}
