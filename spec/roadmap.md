@@ -41,7 +41,7 @@
 
 ### T002 定义首个核心功能与链上职责
 
-- 状态：DOING
+- 状态：BLOCKED
 - 负责人：skelitalynn；AI 助手执行 Spec 整理，业务规则由项目发起人确认。
 - 分支 / PR：`docs/002-ready-spec` / [Draft PR #4](https://github.com/skelitalynn/avalanche/pull/4)，业务规则确认中，尚未合并。
 - 依赖：T001、T009；产品场景已提供，仍需确定 Q1–Q7。
@@ -54,6 +54,8 @@
 
 - 当前证据：2026-09-19，已发出争议/资金/隐私三组规则确认题，尚未收到业务答复。已核对 Circle 官方 Fuji USDC 地址、精度与 Core Mobile WalletConnect 接入；只读 RPC 三项通过，详见 [生态文档](ecosystem.md)。业务状态机和接口仍待用户确认后冻结，Spec 保持 DRAFT。
 - 确认检查点：三组建议方案、备选项和待答复状态已记录在 [001 Spec 第 15 节](features/001-situationship.md#15-t002-集中确认记录)，同时列出完整状态机、接口、AC 与 READY 复核的缺口。只有项目发起人的明确答复才能关闭相关业务决策；自动续跑不代表采用建议值。
+
+- 阻塞与恢复：争议结果、资金退出与隐私三组规则尚无明确答复；本次连续三轮 goal 均遇到相同依赖，独立技术核对与确认清单已完成。已核对 PR #4 为 Draft，当前无评论或评审提供业务选择。项目发起人确认 D1–D3 或给出修改项后，回到 DOING，继续补齐状态机、接口和 AC；不能以自动续跑替代业务确认。
 
 ### T009 整理 SituationSHIT 项目文档
 
