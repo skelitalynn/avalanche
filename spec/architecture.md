@@ -106,3 +106,7 @@ T004 可实施桌面 Core 与手机 WalletConnect；缺实际 projectId 只阻�
 - `scripts/persistent-chain.ts` 包装 Hardhat EDR，并串行化所有读写 RPC；每次写入先 fsync intent，执行后写入回执/区块证明，成功落盘后才响应。重启按冻结时间与依赖版本重放，逐项核对哈希；尾部未确认 intent 可重放，其余断序、损坏、版本差异一律失败关闭。签名请求不进入操作日志。
 - `scripts/local.ts` 用稳定 sessionId 将数据库、加密密钥、部署清单及 genesis 绑定；恢复失败不删除或自动替换旧会话。`mvp:new` 才更换会话。当前恢复时间随操作数量线性增长，适用于本地 Demo，不是生产区块链持久存储方案。日志对意外损坏提供校验，不抵抗能同时重写整套本机数据的攻击者。
 - 不改变链上状态机、金额规则或时间窗口。API补齐协议摘要、到期拒读和不存在案件的404。跨平台模板位于 `docs/ci/verify.yml`；GitHub凭据缺workflow权限，尚未启用，当前只有Linux本机实测。证据见 T015–T018 记录。
+
+## T019 Fuji运行入口
+
+`scripts/fuji.ts` 提供 `mvp:fuji`，读取 `.env.fuji.local`（可选）及部署清单，验证链、官方测试USDC、Factory token绑定和成功部署回执后才构建并启动本机API/前台。强制关闭开发钱包，数据与本地31337会话分离；密钥首次自动生成并以0600保存，普通重启保持，Factory/密钥不匹配时失败关闭。手机projectId不影响桌面Core连接，未自动对公网开放服务。

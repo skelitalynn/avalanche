@@ -365,3 +365,14 @@
 - 完成证据：仅Linux实测通过、Fuji只读预检通过；跨平台模板与指南已交付，实际Windows/macOS及Core/Fuji验收未完成。见 [记录](verification/t015-t018-local-completion.md)。
 
 T018阻塞：当前GitHub凭据缺 `workflow` scope，远程拒绝新增工作流；模板已提供，Windows/macOS实际执行待授权后启用。Core真机/Fuji缺projectId、测试设备/账户资金，已提供只读预检与执行指南；未标记真实验收通过。
+
+### T019 Fuji 部署及个人电脑真实钱包启动
+
+- 状态：DOING
+- 负责人：skelitalynn；AI助手实施。
+- 分支 / PR：`feat/001-local-completion` / PR #12，延续用户要求的当前进度。
+- 依赖：T015–T017；专用部署钱包测试AVAX、手机projectId。
+- 对应Spec：001第18节，AC-001-42/43/44。
+- 实施：核对官方链和代币；部署Factory并保存回执；提供mvp:fuji、独立本机数据和Core连接配置。
+- 验证：用户明确要求不运行CI测试；仅构建、启动健康与部署回执核对。真实钱包/资金流程由实际操作记录。
+- 当前证据：Fuji只读预检通过；专用部署钱包已创建，私钥只保存在Git忽略的受限文件；等待测试AVAX到账，不将待部署写为已部署。

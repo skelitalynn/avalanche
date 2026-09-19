@@ -28,6 +28,10 @@ npm run mvp:local
 
 **Ctrl+C停止服务；再次运行会恢复原来的本地链和数据库。** 想从头演示时执行 `npm run mvp:new`，旧会话目录仍保留。仅使用本地测试资产，Fuji/Core 真机验收另行记录。
 
+## 用Core钱包与Fuji测试币
+
+Fuji启动入口已提供；实际Factory部署仍需成功回执和部署清单，不能将本地测试链当成Fuji。取得 `.local/deployment-43113.json` 后执行 `npm run mvp:fuji`，打开 http://127.0.0.1:5174/ 并用自己的Core扩展连接43113。手机WalletConnect需填写项目自己的projectId。详见 [Fuji运行与验收](docs/fuji-acceptance.md)。
+
 ## 运行前台演示
 
 使用 Node 24.13+（`.nvmrc`）。仓库根目录执行：

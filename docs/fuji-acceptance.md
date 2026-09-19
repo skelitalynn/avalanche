@@ -14,7 +14,7 @@ npm run preflight:fuji
 
 ## 部署与验收交接
 
-仓库默认 PR 合并授权不包括部署或链上资金交易（见 [开发规则](../AGENTS.md)）。取得针对 Fuji 的授权后，在操作者本机安全配置部署环境，使用现有 `deploy:fuji`；该脚本还要求 `CONFIRM_FUJI_DEPLOY=yes`。核对部署回执成功、Factory字节码、固定代币，再保存生成的 `.local/deployment-43113.json`。不得把本地TestUSDC地址替换到Fuji。
+用户已于2026-09-19明确授权Fuji部署。在操作者本机安全配置部署环境，使用现有 `deploy:fuji`；该脚本还要求 `CONFIRM_FUJI_DEPLOY=yes`。核对部署回执成功、Factory字节码、固定代币，再保存生成的 `.local/deployment-43113.json`。不得把本地TestUSDC地址替换到Fuji。
 
 单独配置 API 的 origin、数据库和加密密钥；前台设置 `VITE_DEFAULT_MODE=live`、`VITE_LOCAL_WALLETS=false`、`VITE_WALLETCONNECT_PROJECT_ID`，按 `.env.example` 对齐部署清单。手机使用可访问的 HTTPS 站点与同源 API；手机的 `127.0.0.1` 指向手机本身，不能直接访问电脑回环服务。站点部署和对外暴露需明确授权，本地启动器不会自动开放。
 
@@ -27,3 +27,20 @@ npm run preflight:fuji
 5. 对照 [32项矩阵](../spec/verification/t015-t018-local-completion.md) 补齐 F 列；记录设备/系统、钱包版本、网络、交易与回执、业务前后状态。敏感内容和签名不要写入公开证据。
 
 未具备这些条件时，真实验收保持未完成；本地产品仍可独立运行。
+
+## 用自己的Core钱包和测试币启动
+
+取得已经验证的 `.local/deployment-43113.json` 后，在自己的电脑执行：
+
+```bash
+npm ci
+npm run mvp:fuji
+```
+
+打开 http://127.0.0.1:5174/，连接Core扩展并切到Fuji（43113）后签名登录。界面必须显示“Fuji · 测试网”，不会出现本地五钱包按钮。API及加密数据仍在自己电脑，链和测试币位于Fuji。不要使用 `mvp:local` 操作Fuji资金。
+
+部署gas和每次链上操作使用测试AVAX；入金使用Circle官方Fuji USDC。五个角色需不同地址，各参与者准备自己约定的R+B测试USDC，三位好友准备投票gas；钱包保管私钥。
+
+手机连接时将 `.env.fuji.example` 复制为 `.env.fuji.local`，填写自己的WalletConnect projectId；手机访问需要可达站点，HTTPS反向代理的origin也需在文件中对应配置。启动器仅监听电脑回环地址，不会自行公开端口。
+
+按用户要求，T019不执行CI或回归套件；只构建启动所需产物、核对真实部署回执与健康接口。

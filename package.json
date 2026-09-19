@@ -33,7 +33,8 @@
     "mvp:new": "npm run contracts:build && npm run build:local && tsx scripts/local.ts --new",
     "test:chain-recovery": "node --import tsx --test scripts/persistent-chain.test.ts",
     "test:acceptance": "node --import tsx scripts/acceptance.mjs",
-    "preflight:fuji": "tsx scripts/preflight-fuji.ts"
+    "preflight:fuji": "tsx scripts/preflight-fuji.ts",
+    "mvp:fuji": "node --env-file-if-exists=.env.fuji.local --import tsx scripts/fuji.ts"
   },
   "devDependencies": {
     "@playwright/test": "^1.63.0",
