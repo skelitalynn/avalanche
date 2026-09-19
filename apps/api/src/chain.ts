@@ -1,4 +1,6 @@
 import {
+  BaseError,
+  ContractFunctionRevertedError,
   createPublicClient,
   http,
   parseEventLogs,
@@ -150,13 +152,31 @@ export function createChain(config: ChainConfig) {
     };
   }
   async function caseData(address: Address, id: bigint, blockNumber: bigint) {
-    const dispute = await client.readContract({
-      address,
-      abi: SituationAgreementAbi,
-      functionName: "getDispute",
-      args: [id],
-      blockNumber,
-    });
+    const dispute = await client
+      .readContract({
+        address,
+        abi: SituationAgreementAbi,
+        functionName: "getDispute",
+        args: [id],
+        blockNumber,
+      })
+      .catch((error: unknown) => {
+        const revert =
+          error instanceof BaseError
+            ? error.walk(
+                (cause) => cause instanceof ContractFunctionRevertedError,
+              )
+            : undefined;
+        if (
+          revert instanceof ContractFunctionRevertedError &&
+          revert.data?.errorName === "NotFound"
+        )
+          throw Object.assign(Error("Unknown dispute"), {
+            statusCode: 404,
+            code: "NOT_FOUND",
+          });
+        throw error;
+      });
     const check = await client.readContract({
       address,
       abi: SituationAgreementAbi,

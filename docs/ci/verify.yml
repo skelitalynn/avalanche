@@ -1,0 +1,45 @@
+name: Verify local product
+on:
+  push:
+    branches: [main, feat/001-local-completion]
+  pull_request:
+permissions:
+  contents: read
+concurrency:
+  group: verify-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  local:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24.13.0
+          cache: npm
+      - run: npm ci --registry=https://registry.npmjs.org
+      - run: npm run contracts:build
+      - run: npm run typecheck
+      - run: npm run typecheck:core
+      - run: npm test
+      - run: npm run test:core
+      - run: npm run test:chain-recovery
+      - run: npm run build:local
+      - run: npm run test:local
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:acceptance
+      - run: npm run build
+      - run: npm run test:e2e
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: evidence-${{ matrix.os }}
+          path: |
+            artifacts/live/
+            test-results/
+          retention-days: 7

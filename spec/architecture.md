@@ -52,7 +52,7 @@ SituationSHIT 按以下 Web + C-Chain 边界组织；链上维护资金和权威
 
 部署一个 SituationFactory，每个关系部署一个不可升级 SituationAgreement；SituationVault 和 DisputeResolution 为 Agreement 内部 Solidity 模块，使用同一份状态与托管余额，不独立部署。Factory 不保管关系资金。只有本关系状态机能决定分配，没有管理员裁决、升级或提款后门。裁决先锁定权益，再隔离尝试向原持有人付款；失败保留待付项，允许任意地址重试，不能改变收款人。完整权限与事件见 contracts.md。
 
-前台已位于 `apps/web`。`src/App.tsx` 负责服务订阅、HTTP/SIWE 连接门和动作编排，`src/pages` 为七页视图，`src/ui` 为外壳、Radix Themes 基础组件、展示组件及演示交互；`src/styles.css` 统一米白/墨绿/青柠视觉。Radix Theme 限定于 Mock UI 和七页只读适配界面，真实入口仍独立加载自身样式。`src/data/types.ts` 是视图契约，`src/data/service.ts` 是演示服务适配入口，`mockService.ts` 负责状态转换和本机持久化，`httpService.ts` 提供 HTTP/SIWE 连接、Cookie 会话及只读视图映射。页面通过 `SituationService` 读取状态与异步发送动作，不直接读写 localStorage。真实流程由 `main.tsx` 独立选择 `live/LiveApp.tsx`，经 `live/api.ts` 与 wagmi/viem 接入，不将链上状态塞进 `DemoState`，详见 [前台演示指南](../docs/frontend-demo.md)。
+前台已位于 `apps/web`。`src/App.tsx` 负责服务订阅、HTTP/SIWE 连接门和动作编排，`src/pages` 为七页视图，`src/ui` 为外壳、Radix Themes 基础组件、展示组件及演示交互；`src/styles.css` 统一米白/墨绿/青柠视觉。Mock、七页只读适配界面与真实入口共用 Radix Theme 和品牌色。`src/data/types.ts` 是视图契约，`src/data/service.ts` 是演示服务适配入口，`mockService.ts` 负责状态转换和本机持久化，`httpService.ts` 提供 HTTP/SIWE 连接、Cookie 会话及只读视图映射。页面通过 `SituationService` 读取状态与异步发送动作，不直接读写 localStorage。真实写入流程由 `main.tsx` 独立选择 `live/LiveApp.tsx`；真实入口按视图拆分，交易编排集中于 `live/useLiveController.tsx`，经 `live/api.ts` 与 wagmi/viem 接入，不将链上状态塞进 `DemoState`。详见 [前台演示指南](../docs/frontend-demo.md)。
 
 T010 的 Mock 仅用于截图与可点击演示，不能代替 SIWE、服务端权限、链上托管或真实交易验收。路由为 `#/页面名`，无需服务端路由回退。服务返回的金额为整数微 USDC；显示才转换为小数。演示身份切换与时间推进只存在于 Mock 控制面板。
 
@@ -96,6 +96,17 @@ T004 可实施桌面 Core 与手机 WalletConnect；缺实际 projectId 只阻�
 
 `npm run mvp:local` 编译/构建后由 `scripts/local.ts` 顺序启动回环 Hardhat、部署、Fastify、Vite preview。运行时路径由当前检出目录解析，默认5174/3001/8545；没有服务器IP、SSH或Nginx依赖。Node子进程使用 `process.execPath`，不依赖bash的环境变量赋值或系统包管理器。
 
-`build:local` 显式启用真实默认入口和本地开发钱包；普通build默认Mock。前端没有后台密钥；本地账户由Hardhat持有。API通过SIWE验证真实签名，前台从本机RPC查询回执。启动器独占端口，每轮新建链和对应私有目录，Ctrl+C清理其子进程。数据库/密钥/部署清单位于忽略的 `.local/runs/`；旧目录不自动恢复到新链。具体步骤见 [本地指南](../docs/local-mvp.md)。
+`build:local` 显式启用真实默认入口和本地开发钱包；普通build默认Mock。前端没有后台密钥；本地账户由Hardhat持有。API通过SIWE验证真实签名，前台从本机RPC查询回执。启动器独占端口和数据目录，默认恢复当前会话，`mvp:new` 显式新建会话；Ctrl+C或父进程中断时通过IPC清理子进程。数据库/密钥/部署清单与链操作日志位于忽略的 `.local/runs/`。具体步骤见 [本地指南](../docs/local-mvp.md)。
 
 有界证据图片的存储从原计划的私有文件目录调整为SQLite加密字段，保持鉴权内容路由不变，减少本机安装依赖；不把数据库暴露为静态文件。T013是本地集成，原32项AC和真实Fuji的验证边界见 [验证记录](verification/t013-local-integration.md)。
+
+## T015–T018 本地完整实现
+
+- `live/LiveApp.tsx` 仅组织视图；真实视图使用 Radix 控件与共用主题，业务 Hook、SIWE、API 和 Mock 保持分离。换钱包后旧异步结果不得回填私有界面；证据在浏览器核对 SHA-256、案件 commitment 和已登记链上摘要后才显示。
+- `scripts/persistent-chain.ts` 包装 Hardhat EDR，并串行化所有读写 RPC；每次写入先 fsync intent，执行后写入回执/区块证明，成功落盘后才响应。重启按冻结时间与依赖版本重放，逐项核对哈希；尾部未确认 intent 可重放，其余断序、损坏、版本差异一律失败关闭。签名请求不进入操作日志。
+- `scripts/local.ts` 用稳定 sessionId 将数据库、加密密钥、部署清单及 genesis 绑定；恢复失败不删除或自动替换旧会话。`mvp:new` 才更换会话。当前恢复时间随操作数量线性增长，适用于本地 Demo，不是生产区块链持久存储方案。日志对意外损坏提供校验，不抵抗能同时重写整套本机数据的攻击者。
+- 不改变链上状态机、金额规则或时间窗口。API补齐协议摘要、到期拒读和不存在案件的404。跨平台模板位于 `docs/ci/verify.yml`；GitHub凭据缺workflow权限，尚未启用，当前只有Linux本机实测。证据见 T015–T018 记录。
+
+## T019 Fuji运行入口
+
+`scripts/fuji.ts` 提供 `mvp:fuji`，读取 `.env.fuji.local`（可选）及部署清单，验证链、官方测试USDC、Factory token绑定和成功部署回执后才构建并启动本机API/前台。强制关闭开发钱包，数据与本地31337会话分离；密钥首次自动生成并以0600保存，普通重启保持，Factory/密钥不匹配时失败关闭。手机projectId不影响桌面Core连接，未自动对公网开放服务。

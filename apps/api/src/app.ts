@@ -346,10 +346,16 @@ export function createApp(config: ApiConfig) {
       fail(404, "NOT_FOUND");
     if (row.deleted || (!row.situation && row.created + 7 * 86400 < now()))
       fail(410, "DATA_EXPIRED");
-    if (row.situation) participant(await chain.read(row.situation), address);
+    if (row.situation) {
+      const situation = await chain.read(row.situation);
+      participant(situation, address);
+      retention(situation);
+    }
+    const document = store.open(row.body);
+    if (hashDocument(document) !== row.hash) fail(409, "AGREEMENT_MISMATCH");
     return {
       data: {
-        document: store.open(row.body),
+        document,
         agreementHash: row.hash,
         situationAddress: row.situation,
       },
@@ -393,6 +399,7 @@ export function createApp(config: ApiConfig) {
     if (!row) fail(404, "NOT_FOUND");
     if (row.deleted) fail(410, "DATA_EXPIRED");
     const document = store.open(row.body);
+    if (hashDocument(document) !== row.hash) fail(409, "AGREEMENT_MISMATCH");
     const records = all(
       "SELECT * FROM records WHERE situation=?",
       s.address.toLowerCase(),

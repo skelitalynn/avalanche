@@ -783,3 +783,574 @@ test("AC-01/10/25/27/28/29/30: SIWE, private agreement, records and evidence acr
     await rm(dir, { recursive: true, force: true });
   }
 });
+
+test("AC-13/15/16/17: invalid identities, amount endpoints, all preparation deadlines", async () => {
+  for (const amount of [9999n, 1000000001n]) {
+    await assert.rejects(
+      send(factory, F, "createSituation", [
+        { ...params(document()), recoveryAmount: amount },
+      ]),
+    );
+    await assert.rejects(
+      send(factory, F, "createSituation", [
+        { ...params(document()), bondAmount: amount },
+      ]),
+    );
+  }
+  for (const amount of [10000n, 1000000000n]) {
+    const d = {
+      ...document(),
+      recoveryAmount: String(amount),
+      bondAmount: String(amount),
+    };
+    const c = await create(d);
+    assert.equal(await call(c.address, "recoveryAmount"), amount);
+  }
+  const zero = "0x0000000000000000000000000000000000000000";
+  for (const participantB of [zero, accounts[0], accounts[2]])
+    await assert.rejects(
+      send(factory, F, "createSituation", [
+        { ...params(document()), participantB },
+      ]),
+    );
+  for (const supervisors of [
+    [zero, accounts[3], accounts[4]],
+    [accounts[2], accounts[2], accounts[4]],
+    [accounts[0], accounts[3], accounts[4]],
+  ])
+    await assert.rejects(
+      send(factory, F, "createSituation", [
+        { ...params(document()), supervisors },
+      ]),
+    );
+  for (const phase of ["invitation", "funding"])
+    for (const after of [false, true]) {
+      const c = await create();
+      if (phase === "funding")
+        await send(
+          c.address,
+          A,
+          "acceptAgreement",
+          [hashDocument(c.d)],
+          accounts[1],
+        );
+      const deadline = (await snap(c.address))[
+        phase === "funding" ? "fundingDeadline" : "invitationDeadline"
+      ];
+      await mineAt(deadline + (after ? 1n : 0n));
+      const accepted = () =>
+        client.simulateContract({
+          address: c.address,
+          abi: A,
+          functionName: "acceptSupervision",
+          args: [hashDocument(c.d)],
+          account: accounts[2],
+        });
+      const expired = () =>
+        client.simulateContract({
+          address: c.address,
+          abi: A,
+          functionName: "expire",
+          account: accounts[5],
+        });
+      if (after) {
+        await assert.rejects(accepted());
+        await expired();
+        await send(c.address, A, "expire", [], accounts[5]);
+      } else {
+        await accepted();
+        await assert.rejects(expired());
+        await send(c.address, A, "cancel");
+      }
+      assert.equal((await snap(c.address)).activatedAt, 0n);
+      assert.deepEqual((await snap(c.address)).paid, [0n, 0n]);
+      await assert.rejects(send(c.address, A, "cancel"));
+    }
+  for (const after of [false, true]) {
+    const c = await create();
+    await ready(c.address, c.d);
+    await send(token, T, "mint", [accounts[0], 70000000n]);
+    await send(token, T, "approve", [c.address, 70000000n]);
+    await at((await snap(c.address)).fundingDeadline + (after ? 1n : 0n));
+    if (after) {
+      await assert.rejects(send(c.address, A, "deposit"));
+      await send(c.address, A, "expire", [], accounts[5]);
+    } else {
+      await send(c.address, A, "deposit");
+      await send(c.address, A, "expire", [], accounts[5]);
+    }
+    assert.deepEqual(
+      (await snap(c.address)).paid,
+      after ? [0n, 0n] : [70000000n, 0n],
+    );
+  }
+});
+
+test("AC-18/20/21/22: late reply remains claimable, fixed clocks, split and single votes refund", async () => {
+  const c = await active();
+  await send(c.address, A, "sendCheck");
+  const check = await call(c.address, "getCheck", [1n]);
+  await at(check.deadline + 1n);
+  await send(c.address, A, "respond", [1n], accounts[1]);
+  await send(c.address, A, "openDispute", [1n]);
+  await send(c.address, A, "proposeResolution", [1n, 1]);
+  assert.deepEqual((await snap(c.address)).paid, [0n, 0n]);
+  await send(c.address, A, "confirmResolution", [1n, 1n], accounts[1]);
+  assert.deepEqual((await snap(c.address)).paid, [70000000n, 70000000n]);
+  for (const split of [false, true]) {
+    const c = await voting();
+    const d = await call(c.address, "getDispute", [1n]);
+    assert.equal(d.appealDeadline - d.openedAt, 48n * 3600n);
+    assert.equal(d.voteDeadline - d.openedAt, 120n * 3600n);
+    await send(c.address, A, "vote", [1n, true], accounts[2]);
+    if (split) await send(c.address, A, "vote", [1n, false], accounts[3]);
+    await assert.rejects(send(c.address, A, "finalizeTimeout", [1n]));
+    await at(d.voteDeadline + 1n);
+    await send(c.address, A, "finalizeTimeout", [1n], accounts[5]);
+    assert.deepEqual((await snap(c.address)).paid, [70000000n, 70000000n]);
+    assert.equal((await snap(c.address)).state, 6);
+    await assert.rejects(send(c.address, A, "vote", [1n, true], accounts[4]));
+  }
+});
+
+test("AC-23/31: same-block races in both orders allocate exactly once", async () => {
+  async function race(
+    address: Address,
+    commands: { who: Address; name: string; args: readonly unknown[] }[],
+  ) {
+    await testClient.setAutomine(false);
+    try {
+      const hashes: Hex[] = [];
+      for (const command of commands)
+        hashes.push(
+          await wallet(command.who).writeContract({
+            address,
+            abi: A,
+            functionName: command.name as any,
+            args: command.args as any,
+            gas: 3000000n,
+            gasPrice: 2000000000n,
+          }),
+        );
+      await testClient.mine({ blocks: 1 });
+      const receipts = await Promise.all(
+        hashes.map((hash) => client.getTransactionReceipt({ hash })),
+      );
+      assert.equal(receipts[0].blockHash, receipts[1].blockHash);
+      assert.deepEqual(
+        receipts.map((r) => r.status),
+        ["success", "reverted"],
+      );
+    } finally {
+      await testClient.setAutomine(true);
+    }
+  }
+  for (const reverse of [false, true]) {
+    const c = await active();
+    await send(c.address, A, "sendCheck");
+    await send(c.address, A, "requestEnd");
+    await at((await call(c.address, "getCheck", [1n])).deadline + 1n);
+    const commands = [
+      { who: accounts[1], name: "confirmEnd", args: [1n] },
+      { who: accounts[0], name: "openDispute", args: [1n] },
+    ];
+    await race(c.address, reverse ? commands.reverse() : commands);
+    assert.deepEqual(
+      (await snap(c.address)).paid,
+      reverse ? [0n, 0n] : [70000000n, 70000000n],
+    );
+  }
+  for (const reverse of [false, true]) {
+    const c = await voting();
+    await send(c.address, A, "vote", [1n, true], accounts[2]);
+    await send(c.address, A, "proposeResolution", [1n, 1]);
+    const commands = [
+      { who: accounts[1], name: "confirmResolution", args: [1n, 1n] },
+      { who: accounts[3], name: "vote", args: [1n, true] },
+    ];
+    await race(c.address, reverse ? commands.reverse() : commands);
+    assert.deepEqual(
+      (await snap(c.address)).paid,
+      reverse ? [50000000n, 90000000n] : [70000000n, 70000000n],
+    );
+  }
+});
+
+test("AC-03/25/26/27/28/29/30: cross-month records, auth forgery, image consent/integrity and restart cleanup", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "situation-private-"));
+  const c = await create();
+  let clock = Number((await client.getBlock()).timestamp) * 1000;
+  const options = {
+    origin: "http://localhost:5173",
+    rpc,
+    chainId: 31337,
+    factory,
+    token,
+    database: join(dir, "api.sqlite"),
+    encryptionKey: randomBytes(32).toString("hex"),
+    clock: () => clock,
+  };
+  let { app, store } = createApp(options);
+  const cookies = new Map<Address, string>();
+  const request = (
+    who: Address,
+    method: "GET" | "POST",
+    path: string,
+    payload?: any,
+    headers: Record<string, string> = {},
+  ) =>
+    app.inject({
+      method,
+      url: "/api/v1" + path,
+      remoteAddress: `127.0.0.${accounts.indexOf(who) + 1}`,
+      headers: {
+        origin: options.origin,
+        cookie: cookies.get(who) ?? "",
+        "idempotency-key": randomUUID(),
+        ...headers,
+      },
+      ...(payload === undefined ? {} : { payload }),
+    });
+  async function challenge(who: Address) {
+    const r = await request(who, "POST", "/auth/challenge", { address: who });
+    assert.equal(r.statusCode, 200, r.body);
+    return {
+      message: r.json().data.message as string,
+      cookie: r.cookies[0].name + "=" + r.cookies[0].value,
+    };
+  }
+  async function login(who: Address) {
+    const { message, cookie } = await challenge(who);
+    const r = await request(
+      who,
+      "POST",
+      "/auth/verify",
+      { message, signature: await wallet(who).signMessage({ message }) },
+      { cookie },
+    );
+    assert.equal(r.statusCode, 200, r.body);
+    cookies.set(
+      who,
+      "session=" + r.cookies.find((c) => c.name === "session")!.value,
+    );
+  }
+  async function upload(form: FormData) {
+    const r = new Request("http://localhost", { method: "POST", body: form });
+    return request(
+      accounts[0],
+      "POST",
+      `/situations/${c.address}/disputes/1/evidence`,
+      Buffer.from(await r.arrayBuffer()),
+      { "content-type": r.headers.get("content-type")! },
+    );
+  }
+  function textForm(text = "本案说明", consent = true) {
+    const f = new FormData();
+    f.set("kind", "text");
+    f.set("text", text);
+    if (consent) {
+      f.set("consentVersion", "1");
+      f.set("shareWithCasePanel", "true");
+    }
+    return f;
+  }
+  try {
+    await app.ready();
+    for (const mutate of [
+      (s: string) => s.replace("localhost:5173", "evil.example"),
+      (s: string) => s.replace("Chain ID: 31337", "Chain ID: 43113"),
+    ]) {
+      const ch = await challenge(accounts[0]);
+      const message = mutate(ch.message);
+      assert.notEqual(message, ch.message);
+      assert.equal(
+        (
+          await request(
+            accounts[0],
+            "POST",
+            "/auth/verify",
+            {
+              message,
+              signature: await wallet(accounts[0]).signMessage({ message }),
+            },
+            { cookie: ch.cookie },
+          )
+        ).statusCode,
+        401,
+      );
+    }
+    const expired = await challenge(accounts[0]);
+    clock += 601000;
+    assert.equal(
+      (
+        await request(
+          accounts[0],
+          "POST",
+          "/auth/verify",
+          {
+            message: expired.message,
+            signature: await wallet(accounts[0]).signMessage({
+              message: expired.message,
+            }),
+          },
+          { cookie: expired.cookie },
+        )
+      ).statusCode,
+      401,
+    );
+    for (const who of accounts.slice(0, 6)) await login(who);
+    const draft = await request(accounts[0], "POST", "/agreements", {
+      document: c.d,
+    });
+    assert.equal(draft.statusCode, 201, draft.body);
+    const id = draft.json().data.id;
+    assert.equal(
+      (
+        await request(accounts[0], "POST", `/agreements/${id}/link`, {
+          txHash: c.tx,
+        })
+      ).statusCode,
+      200,
+    );
+    assert.equal(
+      (
+        await request(accounts[5], "GET", `/agreements/${id}`, undefined, {
+          "x-wallet-address": accounts[0],
+        })
+      ).statusCode,
+      404,
+    );
+    assert.equal(
+      (await request(accounts[0], "GET", `/situations/${accounts[7]}`))
+        .statusCode,
+      404,
+    );
+    const original = store.db
+      .prepare("SELECT body FROM agreements WHERE id=?")
+      .get(id) as any;
+    store.db
+      .prepare("UPDATE agreements SET body=? WHERE id=?")
+      .run(store.seal({ ...c.d, meetingTarget: 2 }), id);
+    assert.equal(
+      (await request(accounts[1], "GET", `/agreements/${id}`)).statusCode,
+      409,
+    );
+    store.db
+      .prepare("UPDATE agreements SET body=? WHERE id=?")
+      .run(original.body, id);
+    await ready(c.address, c.d);
+    await fund(c.address, accounts[0]);
+    await fund(c.address, accounts[1]);
+    const date = new Date(clock);
+    const monthEnd =
+      Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + 1, 1) - 60000;
+    await mineAt(BigInt(Math.ceil(monthEnd / 1000)));
+    clock = monthEnd;
+    for (const who of accounts.slice(0, 2)) await login(who);
+    const meetingDate = new Date(clock).toISOString().slice(0, 10);
+    const meeting = await request(
+      accounts[0],
+      "POST",
+      `/situations/${c.address}/meetings`,
+      { date: meetingDate },
+    );
+    assert.equal(meeting.statusCode, 201, meeting.body);
+    assert.equal(
+      (await request(accounts[0], "GET", `/situations/${c.address}`)).json()
+        .data.meetingCount,
+      0,
+    );
+    clock += 120000;
+    await mineAt(BigInt(clock / 1000));
+    const path = `/situations/${c.address}/meetings/${meeting.json().data.id}/confirm`;
+    const key = randomUUID();
+    assert.equal(
+      (await request(accounts[1], "POST", path, {}, { "idempotency-key": key }))
+        .statusCode,
+      200,
+    );
+    assert.equal(
+      (await request(accounts[1], "POST", path, {}, { "idempotency-key": key }))
+        .statusCode,
+      200,
+    );
+    assert.equal(
+      (await request(accounts[1], "POST", path, {})).statusCode,
+      409,
+    );
+    assert.equal(
+      (await request(accounts[0], "GET", `/situations/${c.address}`)).json()
+        .data.meetingCount,
+      0,
+    );
+    const records = (
+      await request(
+        accounts[0],
+        "GET",
+        `/situations/${c.address}/records?month=${meetingDate.slice(0, 7)}`,
+      )
+    ).json().data.meetings;
+    assert.equal(records.length, 1);
+    assert.ok(records[0].confirmedAt);
+    const relationship = await request(
+      accounts[0],
+      "POST",
+      `/situations/${c.address}/relationship-checks`,
+      {},
+    );
+    const confirmed = await request(
+      accounts[1],
+      "POST",
+      `/situations/${c.address}/relationship-checks/${relationship.json().data.id}/confirm`,
+      {},
+    );
+    assert.equal(
+      (await request(accounts[0], "GET", `/situations/${c.address}`)).json()
+        .data.nextConfirmationAt,
+      confirmed.json().data.confirmedAt + 7 * 86400,
+    );
+    await send(c.address, A, "sendCheck");
+    await at((await call(c.address, "getCheck", [1n])).deadline + 1n);
+    await send(c.address, A, "openDispute", [1n]);
+    clock = Number((await client.getBlock()).timestamp) * 1000;
+    for (const who of accounts.slice(0, 5)) await login(who);
+    assert.equal((await upload(textForm("未授权", false))).statusCode, 422);
+    assert.equal((await upload(textForm("字".repeat(4001)))).statusCode, 422);
+    const sharp = (await import("sharp")).default;
+    const jpeg = await sharp({
+      create: { width: 2, height: 2, channels: 3, background: "#eeeeee" },
+    })
+      .withExif({ IFD0: { Copyright: "private metadata" } })
+      .jpeg()
+      .toBuffer();
+    assert.ok((await sharp(jpeg).metadata()).exif);
+    const form = new FormData();
+    form.set("kind", "image");
+    form.set("consentVersion", "1");
+    form.set("shareWithCasePanel", "true");
+    form.set(
+      "file",
+      new Blob([new Uint8Array(jpeg)], { type: "image/jpeg" }),
+      "private.jpg",
+    );
+    const image = await upload(form);
+    assert.equal(image.statusCode, 201, image.body);
+    const ev = image.json().data;
+    await send(c.address, A, "registerEvidence", [1n, ev.commitment]);
+    const contentPath = `/situations/${c.address}/disputes/1/evidence/${ev.id}`;
+    const content = await request(accounts[1], "GET", contentPath + "/content");
+    assert.equal(content.statusCode, 200, content.body);
+    const meta = await sharp(content.rawPayload).metadata();
+    assert.equal(meta.format, "png");
+    assert.equal(meta.exif, undefined);
+    const raw = store.db
+      .prepare("SELECT body FROM evidence WHERE id=?")
+      .get(ev.id) as any;
+    const material = store.open(raw.body);
+    for (const changed of [
+      { ...material, content: Buffer.from("tamper").toString("base64") },
+      { ...material, salt: hash() },
+    ]) {
+      store.db
+        .prepare("UPDATE evidence SET body=? WHERE id=?")
+        .run(store.seal(changed), ev.id);
+      assert.equal(
+        (await request(accounts[1], "GET", contentPath)).statusCode,
+        409,
+      );
+    }
+    store.db
+      .prepare("UPDATE evidence SET body=? WHERE id=?")
+      .run(raw.body, ev.id);
+    assert.equal(
+      (
+        await request(
+          accounts[1],
+          "GET",
+          `/situations/${c.address}/disputes/2/evidence/${ev.id}`,
+        )
+      ).statusCode,
+      404,
+    );
+    const oversized = new FormData();
+    oversized.set("kind", "image");
+    oversized.set("consentVersion", "1");
+    oversized.set("shareWithCasePanel", "true");
+    oversized.set(
+      "file",
+      new Blob([new Uint8Array(5 * 1024 * 1024 + 1)], { type: "image/png" }),
+      "large.png",
+    );
+    assert.equal((await upload(oversized)).statusCode, 413);
+    // One image and nine text drafts fill the frozen ten-item limit.
+    for (let i = 0; i < 9; i++)
+      assert.equal((await upload(textForm(String(i)))).statusCode, 201);
+    assert.equal((await upload(textForm("第十一项"))).statusCode, 409);
+    const dispute = await call(c.address, "getDispute", [1n]);
+    await at(dispute.appealDeadline + 1n);
+    await send(c.address, A, "startVoting", [1n]);
+    clock = Number((await client.getBlock()).timestamp) * 1000;
+    await login(accounts[0]);
+    assert.equal((await upload(textForm())).statusCode, 409);
+    await send(c.address, A, "vote", [1n, false], accounts[2]);
+    await send(c.address, A, "vote", [1n, false], accounts[3]);
+    clock =
+      (Number((await snap(c.address)).terminatedAt) + 30 * 86400 - 1) * 1000;
+    await login(accounts[0]);
+    assert.equal(
+      (await request(accounts[0], "GET", contentPath)).statusCode,
+      200,
+    );
+    await app.close();
+    clock += 1000;
+    ({ app, store } = createApp(options));
+    await app.ready();
+    await login(accounts[0]);
+    assert.equal(
+      (await request(accounts[0], "GET", contentPath)).statusCode,
+      410,
+    );
+    assert.equal(
+      (store.db.prepare("SELECT count(*) AS n FROM evidence").get() as any).n,
+      0,
+    );
+    assert.equal(
+      (
+        store.db
+          .prepare("SELECT body FROM agreements WHERE id=?")
+          .get(id) as any
+      ).body,
+      "",
+    );
+  } finally {
+    await app.close();
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test("AC-30/32: deployment mismatches and unavailable RPC fail closed", async () => {
+  for (const patch of [
+    { chainId: 43113 },
+    { factory: accounts[8] },
+    { token: accounts[8] },
+    { rpc: "http://127.0.0.1:1" },
+  ]) {
+    const { app } = createApp({
+      origin: "http://localhost:5173",
+      rpc,
+      chainId: 31337,
+      factory,
+      token,
+      database: ":memory:",
+      encryptionKey: randomBytes(32).toString("hex"),
+      ...patch,
+    });
+    try {
+      const r = await app.inject({ method: "GET", url: "/api/v1/config" });
+      assert.equal(r.statusCode, 503);
+      assert.equal(r.json().data, undefined);
+    } finally {
+      await app.close();
+    }
+  }
+});

@@ -41,11 +41,11 @@ spec/
 | 编号 | 功能 | Spec 状态 | 任务 |
 | --- | --- | --- | --- |
 | 002 | [演示前台](features/002-demo-frontend.md) | READY：用户授权 mock 前台先行 | T010 |
-| 003 | [前台后台适配层](features/003-backend-adapter.md) | READY：可切换 HTTP/SIWE，真实后台尚未提供 | T018 |
+| 003 | [前台后台适配层](features/003-backend-adapter.md) | READY：可切换 HTTP/SIWE，真实写入请使用Live入口 | T024 |
 | 001 | [SituationSHIT 关系承诺 MVP](features/001-situationship.md) | READY：业务规则、状态机、接口和验收基线已冻结 | T002、T005-1 至 T005-8、T006、T009 |
 
 首版排除 AI Agent、DeFi 收益、eERC 隐私金额、线下商户消费及更多 commitment 类型。新增功能使用下一个空闲编号，复制 [模板](features/_template.md)，并在此处加入链接。
-- [002 SituationSHIT 单文件交互原型](features/002-visual-prototype.md)：T014–T017，从创建、双签、入金到关系主页的连续流程，并演示约定修订与申诉；仅本地 mock。
+- [004 SituationSHIT 单文件交互原型](features/004-visual-prototype.md)：T020–T023，从创建、双签、入金到关系主页的连续流程，并演示约定修订与申诉；仅本地 mock。
 
 ## 维护规则
 
