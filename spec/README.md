@@ -14,7 +14,7 @@
 | 基础技术栈 | 已确认 TypeScript + React + Vite；Core Wallet；wagmi + viem；Vitest + Playwright，详见 [架构](architecture.md) |
 | 自定义合约 | 需要，使用 Solidity + Hardhat；Factory + 每关系一个 Agreement，Vault/Dispute 为内部模块 |
 | 后端与数据库 | TypeScript + Fastify、SQLite、私有加密附件目录 |
-| 当前范围 | MVP 需求文档与任务拆分，基础选型已确认；尚未初始化工程 |
+| 当前范围 | 001 MVP 已 READY；002 提供独立 Mock 演示前台，真实后端与链上实现待完成 |
 
 暂不规划主网发布、自建 L1、多链互操作等扩展；如核心场景需要，在对应 Spec 中明确后再加入。
 
@@ -29,6 +29,7 @@ spec/
 ├── roadmap.md            # 开发顺序、任务、测试、验收进度
 └── features/
     ├── 001-situationship.md # SituationSHIT 关系承诺 MVP
+    ├── 002-demo-frontend.md # 可运行的 Mock 前台
     └── _template.md      # 复制为 001-功能名称.md
 ```
 
@@ -38,6 +39,7 @@ spec/
 
 | 编号 | 功能 | Spec 状态 | 任务 |
 | --- | --- | --- | --- |
+| 002 | [演示前台](features/002-demo-frontend.md) | READY：用户授权 mock 前台先行 | T010 |
 | 001 | [SituationSHIT 关系承诺 MVP](features/001-situationship.md) | READY：业务规则、状态机、接口和验收基线已冻结 | T002、T005-1 至 T005-8、T006、T009 |
 
 首版排除 AI Agent、DeFi 收益、eERC 隐私金额、线下商户消费及更多 commitment 类型。新增功能使用下一个空闲编号，复制 [模板](features/_template.md)，并在此处加入链接。

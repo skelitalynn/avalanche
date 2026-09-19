@@ -1,6 +1,6 @@
 # 技术架构
 
-状态：基础技术选型已确认（2026-09-19）。SituationSHIT 业务规则和实现边界已由 T002 冻结；具体依赖版本与应用实现由后续任务完成。
+状态：基础技术选型已确认（2026-09-19）。SituationSHIT 业务规则和实现边界已由 T002 冻结；T010 已交付独立 Mock 前台并锁定其依赖，真实后端与合约由后续任务完成。
 
 确认来源：项目负责人在本次需求沟通中认可 TypeScript、React + Vite、Core Wallet、Fuji C-Chain、wagmi + viem、Vitest + Playwright，以及按需使用 Solidity + Hardhat 的方案。
 
@@ -18,7 +18,7 @@
 | 页面流程测试 | Playwright，覆盖关键页面操作；真实 Core/Fuji 验收另外记录 |
 | 自定义智能合约 | 需要，使用 Solidity + Hardhat 开发、测试和部署；负责协议、托管、投票和结算 |
 | 后端与数据 | TypeScript + Fastify，同源 HTTP API；SQLite 存结构化数据，非公开目录存加密附件；不引入独立索引服务 |
-| 开发运行时、包管理器与依赖版本 | T003 初始化时核对工具兼容要求，记录版本并提交锁文件 |
+| 开发运行时、包管理器与依赖版本 | 前台推荐 Node 24、最低 22.12，npm workspaces 与 package-lock；后端/合约在 T003 继续确定 |
 
 普通 C-Chain 交互统一使用 wagmi + viem；AvalancheJS 和 Avalanche Client SDK 暂不引入，需要其特有 API 时再更新本文件。Avalanche CLI、HyperSDK 和自建 L1 不在本次基础方案内。
 
@@ -52,7 +52,9 @@ SituationSHIT 按以下 Web + C-Chain 边界组织；链上维护资金和权威
 
 部署一个 SituationFactory，每个关系部署一个不可升级 SituationAgreement；SituationVault 和 DisputeResolution 为 Agreement 内部 Solidity 模块，使用同一份状态与托管余额，不独立部署。Factory 不保管关系资金。只有本关系状态机能决定分配，没有管理员裁决、升级或提款后门。裁决先锁定权益，再隔离尝试向原持有人付款；失败保留待付项，允许任意地址重试，不能改变收款人。完整权限与事件见 contracts.md。
 
-目录在 T003 初始化时确定，再记录真实路径；当前不预建空的应用模块。
+前台已位于 `apps/web`。`src/App.tsx` 为七页界面，`src/data/types.ts` 是视图契约，`src/data/service.ts` 是唯一服务适配入口，`mockService.ts` 负责状态转换和本机持久化。页面通过 `SituationService` 读取状态与异步发送动作，不直接读写 localStorage。生产 API/钱包适配器后续从该入口接入，详见 [前台演示指南](../docs/frontend-demo.md)。
+
+T010 的 Mock 仅用于截图与可点击演示，不能代替 SIWE、服务端权限、链上托管或真实交易验收。路由为 `#/页面名`，无需服务端路由回退。服务返回的金额为整数微 USDC；显示才转换为小数。演示身份切换与时间推进只存在于 Mock 控制面板。
 
 ## 关键交互约定
 

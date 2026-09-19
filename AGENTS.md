@@ -7,7 +7,7 @@
 1. 阅读根 [README](README.md)、[Spec 入口](spec/README.md)、[Roadmap](spec/roadmap.md) 和本任务相关的功能 Spec；涉及技术边界时阅读 architecture.md、contracts.md。
 2. 检查 `git status --short`、当前分支和已有修改。保留其他人的工作，不覆盖、回滚或提交无关修改。
 3. 确认任务负责人、依赖和改动范围；在任务分支工作。不同开发者或并行会话使用各自的 clone/worktree，不在同一工作目录切换分支。
-4. 当前仓库仍处文档阶段；基础技术栈已在 [技术架构](spec/architecture.md) 确认，SituationSHIT 产品范围见 [001 Spec](spec/features/001-situationship.md)，T002 已冻结业务规则、状态机和接口，按 READY Spec 实施。沿用已确认选型，以真实文件为准，不假设启动、构建、测试命令已经存在。
+4. 当前仓库已提供独立 Mock 演示前台，后端与合约尚未实现；基础技术栈已在 [技术架构](spec/architecture.md) 确认，SituationSHIT 产品范围见 [001 Spec](spec/features/001-situationship.md)，T002 已冻结业务规则、状态机和接口，按 READY Spec 实施。沿用已确认选型，以真实文件为准，不假设启动、构建、测试命令已经存在。
 
 ## 将自然语言转成可执行 Spec
 

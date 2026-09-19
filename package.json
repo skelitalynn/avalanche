@@ -1,0 +1,24 @@
+{
+  "name": "situationshit",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "workspaces": [
+    "apps/web"
+  ],
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "npm run dev -w @situationshit/web -- --host 0.0.0.0",
+    "build": "npm run build -w @situationshit/web",
+    "typecheck": "npm run typecheck -w @situationshit/web",
+    "test": "npm run test -w @situationshit/web",
+    "test:e2e": "playwright test",
+    "screenshots": "playwright test tests/screenshots.spec.ts",
+    "preview": "npm run preview -w @situationshit/web"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0"
+  }
+}
