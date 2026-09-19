@@ -39,3 +39,5 @@ npm run screenshots
 截图输出到 `artifacts/screenshots/`，覆盖桌面 1440×1000 与手机 390×844 的七个页面。浏览器测试默认使用生产预览和单 worker，便于内存较小的演示机器运行。若已有 5173 服务，会复用该服务；需要验证新代码时先构建并重新启动预览。
 
 只演示生产版本：执行 `npm run build`，再执行 `npm run preview`，同样使用 5173 端口；不要同时启动 dev 与 preview。
+
+云服务器演示的 Nginx 入口、运行状态和维护步骤见 [Nginx 部署说明](docs/nginx-demo.md)。
